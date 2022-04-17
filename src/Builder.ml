@@ -2,20 +2,22 @@ module Endo =
 struct
   module type Param =
   sig
+    module Shift : Shift.S
     type level
-    val level : level Syntax.endo -> level
-    val unlevel : level -> level Syntax.endo option
+    val level : (Shift.t, level) Syntax.endo -> level
+    val unlevel : level -> (Shift.t, level) Syntax.endo option
   end
 
   module type S =
   sig
+    module Shift : Shift.S
     type level
     val shifted : level -> Shift.t -> level
     val top : level
     val simplify : level -> level
   end
 
-  module Make (P : Param) : S with type level = P.level =
+  module Make (P : Param) : S with type level = P.level and module Shift = P.Shift =
   struct
     include P
     open Syntax.Endo
@@ -48,16 +50,18 @@ module Free =
 struct
   module type Param =
   sig
+    module Shift : Shift.S
     type var
   end
 
   module type S =
   sig
+    module Shift : Shift.S
     type var
-    type level = var Syntax.free
+    type level = (Shift.t, var) Syntax.free
 
     val var : var -> level
-    include Endo.S with type level := level
+    include Endo.S with type level := level and module Shift := Shift
   end
 
   module Make (P : Param) : S with type var = P.var =
@@ -67,7 +71,7 @@ struct
     let var = var
     module P = struct
       include P
-      type level = var Syntax.free
+      type level = (Shift.t, var) Syntax.free
       let level t = Level t
       let unlevel t = match t with Level l -> Some l | _ -> None
     end
