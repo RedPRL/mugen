@@ -1,0 +1,20 @@
+opam-version: "2.0"
+name: "mugenjou"
+synopsis: "Universes"
+description: """Universe Levels"""
+maintainer: "favonia <favonia@gmail.com>"
+authors: "The RedPRL Development Team"
+license: "Apache-2.0"
+homepage: "https://github.com/RedPRL/makubex"
+bug-reports: "https://github.com/RedPRL/makubex/issues"
+dev-repo: "git+https://github.com/RedPRL/makubex.git"
+depends: [
+  "dune" {>= "2.0"}
+  "ocaml" {>= "4.12"}
+  "odoc" {with-doc}
+]
+build: [
+  ["dune" "build" "-p" name "-j" jobs]
+  ["dune" "build" "-p" name "-j" jobs "@runtest"] {with-test}
+  ["dune" "build" "-p" name "-j" jobs "@doc"] {with-doc}
+]

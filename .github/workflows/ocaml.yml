@@ -1,0 +1,23 @@
+name: Build, test, and doc update
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  run:
+    strategy:
+      matrix:
+        include:
+          - ocaml-compiler: "4.10"
+            build-doc: false
+          - ocaml-compiler: "4.14"
+            build-doc: true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: RedPRL/actions-ocaml@v1
+        with:
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
+          build-doc: ${{ matrix.build-doc }}
+          publish-doc-if-built: ${{ github.ref == 'refs/heads/main' }}
