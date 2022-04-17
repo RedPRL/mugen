@@ -10,30 +10,37 @@ struct
   module type S =
   sig
     type level
-    val shift : Shift.t -> level -> level
+    val shifted : level -> Shift.t -> level
+    val top : level
     val simplify : level -> level
   end
 
   module Make (P : Param) : S with type level = P.level =
   struct
     include P
+    open Syntax.Endo
 
-    let shift s l =
+    let shifted l s =
       match unlevel l with
-      | Some (l, s') ->
+      | Some Top -> level Top
+      | Some (Shifted (l, s')) ->
         let s = Shift.compose s' s in
-        if Shift.is_id s then l else level (l, s)
-      | None -> level (l, s)
+        if Shift.is_id s then l else level @@ Shifted (l, s)
+      | None ->
+        if Shift.is_id s then l else level @@ Shifted (l, s)
+
+    let top = level Top
 
     let simplify l =
       let rec go l acc =
         match unlevel l with
-        | Some (l, s) -> go l (s :: acc)
+        | Some Top -> level Top, []
+        | Some (Shifted (l, s)) -> go l (s :: acc)
         | None -> l, acc
       in
       match go l [] with
       | l, [] -> l
-      | l, s::ss -> level (l, List.fold_left Shift.compose s ss)
+      | l, s::ss -> level @@ Shifted (l, List.fold_left Shift.compose s ss)
   end
 end
 

@@ -1,4 +1,6 @@
-type 'a endo = 'a * Shift.t
+type 'a endo =
+  | Shifted of 'a * Shift.t
+  | Top
 
 type 'v free =
   | Level of 'v free endo
@@ -6,12 +8,19 @@ type 'v free =
 
 module Endo =
 struct
-  type 'a t = 'a endo
+  type 'a t = 'a endo =
+    | Shifted of 'a * Shift.t
+    | Top
 
-  let level b s = b, s
+  let shifted b s = Shifted (b, s)
+  let top = Top
 
-  let dump dump_a fmt (base, shift) =
-    Format.fprintf fmt "@[<hv 1>level[@,@[%a@];@,@[%a@]]@]" dump_a base Shift.dump shift
+  let dump dump_a fmt =
+    function
+    | Shifted (base, shift) ->
+      Format.fprintf fmt "@[<hv 1>shifted[@,@[%a@];@,@[%a@]]@]" dump_a base Shift.dump shift
+    | Top ->
+      Format.pp_print_string fmt "top"
 end
 
 module Free =
@@ -20,7 +29,7 @@ struct
     | Level of 'v free endo
     | Var of 'v
 
-  let level b s = Level (b, s)
+  let shifted b s = Level (Shifted (b, s))
 
   let var v = Var v
 
