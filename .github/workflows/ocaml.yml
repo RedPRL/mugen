@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - ocaml-compiler: "4.10"
+          - ocaml-compiler: "4.12"
             build-doc: false
           - ocaml-compiler: "4.14"
             build-doc: true
