@@ -14,35 +14,48 @@ struct
     type level
     val shifted : level -> Shift.t -> level
     val top : level
+    val dissect : level -> level * Shift.t option
     val simplify : level -> level
   end
 
-  module Make (P : Param) : S with type level = P.level and module Shift = P.Shift =
+  module Make (P : Param) : S with module Shift := P.Shift and type level = P.level =
   struct
     include P
     open Syntax.Endo
 
     let shifted l s =
-      match unlevel l with
-      | Some Top -> level Top
-      | Some (Shifted (l, s')) ->
-        let s = Shift.compose s' s in
-        if Shift.is_id s then l else level @@ Shifted (l, s)
-      | None ->
-        if Shift.is_id s then l else level @@ Shifted (l, s)
+      if Shift.is_id s then l
+      else
+        match unlevel l with
+        | Some Top -> level Top
+        | Some (Shifted (l, s')) ->
+          let s = Shift.compose s' s in
+          level @@ Shifted (l, s)
+        | None ->
+          level @@ Shifted (l, s)
 
     let top = level Top
 
-    let simplify l =
+    let reduce_shifts =
+      function
+      | [] -> None
+      | s::ss -> Some (List.fold_left Shift.compose s ss)
+
+    let dissect l =
       let rec go l acc =
         match unlevel l with
-        | Some Top -> level Top, []
+        | Some Top -> level Top, None
         | Some (Shifted (l, s)) -> go l (s :: acc)
-        | None -> l, acc
+        | None -> l, reduce_shifts acc
       in
-      match go l [] with
-      | l, [] -> l
-      | l, s::ss -> level @@ Shifted (l, List.fold_left Shift.compose s ss)
+      go l []
+
+    let simplify l =
+      let l, ss = dissect l in
+      match ss with
+      | None -> l
+      | Some s when Shift.is_id s -> l
+      | Some s -> level @@ Shifted (l, s)
   end
 end
 
@@ -61,10 +74,10 @@ struct
     type level = (Shift.t, var) Syntax.free
 
     val var : var -> level
-    include Endo.S with type level := level and module Shift := Shift
+    include Endo.S with module Shift := Shift and type level := level
   end
 
-  module Make (P : Param) : S with type var = P.var =
+  module Make (P : Param) : S  with module Shift := P.Shift and type var = P.var =
   struct
     open Syntax.Free
 

@@ -11,7 +11,6 @@ sig
   val dump : Format.formatter -> t -> unit
 end
 
-(** Conor McBride's crude universe levels. *)
 module Fixed : S =
 struct
   type t = int
@@ -29,7 +28,6 @@ struct
   let dump = Format.pp_print_int
 end
 
-(** Generalized {!module:Fixed} that allows finite gaps. *)
 module FinGap :
 sig
   include S

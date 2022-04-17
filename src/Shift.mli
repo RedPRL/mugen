@@ -11,8 +11,10 @@ sig
   val dump : Format.formatter -> t -> unit
 end
 
+(** Conor McBride's crude universe levels. *)
 module Fixed : S
 
+(** Generalized {!module:Fixed} that allows finite gaps. *)
 module FinGap :
 sig
   include S
