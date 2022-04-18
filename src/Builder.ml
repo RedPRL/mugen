@@ -14,8 +14,8 @@ struct
     type level
     val shifted : level -> Shift.t -> level
     val top : level
-    val dissect : level -> level * Shift.t option
     val simplify : level -> level
+    val dissect : level -> level * Shift.t option
   end
 
   module Make (P : Param) : S with module Shift := P.Shift and type level = P.level =
