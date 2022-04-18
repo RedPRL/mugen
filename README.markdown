@@ -35,9 +35,12 @@ You need OCaml 4.12 or later
 ### Example Code
 
 ```ocaml
+module MS = Mugenjou.Shift
 module M = Mugenjou.Syntax
-type ulevel = (M.Shift.crude, int) M.free
-let l : ulevel = M.(
+
+type ulevel = (MS.crude, string) M.free
+
+let l : ulevel = M.Free.(shifted (var "x") (MS.Crude.const 10))
 ```
 
 ### Documentation
