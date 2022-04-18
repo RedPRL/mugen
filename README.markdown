@@ -16,7 +16,7 @@ An overly functorized implementation of [Conor McBride’s crude but effective s
 ## Philosophy and Beliefs in this Experiment
 
 1. The distinguished level variable should be made explicit so that everything has clear semantics.
-2. One-variable universe polymorphism with cumulativity is enough. Type ambiguity (as in Coq) and multi-variable universe polymorphism (as in Agda) are overkill.
+2. One-variable universe polymorphism with cumulativity is enough. Typical ambiguity (as in Coq) and multi-variable universe polymorphism (as in Agda) are overkill.
 3. It is convenient to have the top level.
 
 ## Classes of Level Shifting Operators
