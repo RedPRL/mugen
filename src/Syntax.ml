@@ -31,6 +31,8 @@ struct
 
   let shifted b s = Level (Shifted (b, s))
 
+  let top = Level Top
+
   let var v = Var v
 
   let rec dump dump_s dump_v fmt =

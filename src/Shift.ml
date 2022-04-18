@@ -11,7 +11,7 @@ sig
   val dump : Format.formatter -> t -> unit
 end
 
-module Fixed : S =
+module Crude : S =
 struct
   type t = int
   let id = 0
@@ -27,8 +27,9 @@ struct
   let compose : int -> int -> int = (+)
   let dump = Format.pp_print_int
 end
+type crude = Crude.t
 
-module FinGap :
+module FinSkip :
 sig
   include S
   val make : init:int -> steps:int list -> t
@@ -113,3 +114,4 @@ struct
     Format.fprintf fmt "@[<hv 1>shift[@,%a]@]"
       (Format.pp_print_list ~pp_sep:(fun fmt () -> Format.fprintf fmt ";@,") Format.pp_print_int) (s.init :: s.steps)
 end
+type finskip = FinSkip.t

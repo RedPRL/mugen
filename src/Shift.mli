@@ -12,11 +12,13 @@ sig
 end
 
 (** Conor McBride's crude universe levels. *)
-module Fixed : S
+module Crude : S
+type crude = Crude.t
 
-(** Generalized {!module:Fixed} that allows finite gaps. *)
-module FinGap :
+(** Generalized {!module:Crude} that allows finite gaps. *)
+module FinSkip :
 sig
   include S
   val make : init:int -> steps:int list -> t
 end
+type finskip = FinSkip.t
