@@ -1,3 +1,4 @@
 (library
  (name Mugenjou)
+ (libraries bwd)
  (public_name mugenjou))

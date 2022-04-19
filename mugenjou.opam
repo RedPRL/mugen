@@ -11,6 +11,7 @@ dev-repo: "git+https://github.com/RedPRL/makubex.git"
 depends: [
   "dune" {>= "2.0"}
   "ocaml" {>= "4.12"}
+  "bwd" {>= "1.0"}
   "odoc" {with-doc}
 ]
 build: [

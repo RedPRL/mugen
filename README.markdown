@@ -24,7 +24,7 @@ An overly functorized implementation of [Conor McBride’s crude but effective s
 In Conor McBride’s notes, it was noted that any class of strictly monotone operators on levels closed under identity and composition will work. Initially, the class of functions `f(i) = i + n` for `n >= 0` was chosen as it is practically the minimum usable class. We are additionally considering a larger class of strictly monotone functions `f` such that `f(i) = i + n` when `i >= k` for some finite `k` (when `i < k`, the function `f` is still strictly monotone, but may differ from `f’(i) = i + n`). Both classes are implemented in this package. We are eager to experiment with any class that arises from practical needs.
 
 - [Mugenjou.Shift.Crude](https://redprl.org/mugenjou/mugenjou/Mugenjou/Shift/Crude): the class of functions `f(i) = i + n`.
-- [Mugenjou.Shift.FinSkip](https://redprl.org/mugenjou/mugenjou/Mugenjou/Shift/FinSkip): the class of monotone functions that agree with `f(i) = i + n` for `i > k`.
+- [Mugenjou.Shift.Gapped](https://redprl.org/mugenjou/mugenjou/Mugenjou/Shift/Gapped): the class of monotone functions that agree with `f(i) = i + n` for `i > k`.
 
 ## How to Use It
 
