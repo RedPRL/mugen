@@ -41,12 +41,12 @@ sig
 
   (** The motivation is to enable insertion of universe levels between any two consecutive levels, which is something
       the function in {!module:Crude} cannot do.
-      The idea is to introduce "gaps" in these functions, or in other words, to consider piecewise crude shifting operators.
-      Technically, consider all strictly monotone functions [f] such that [f(i) = i + n] when [i >= k] for some finite [k],
+      The idea is to introduce "gaps" in these functions, or in other words, to generalize crude shifting operators
+      in {!module:Crude} to {i piecewise} crude shifting operators.
+      Technically, we consider all strictly monotone functions [f] such that [f(i) = i + n] when [i >= k] for some finite [k],
       where "gaps" may occur for levels [i < k], which means in-between universe levels can be introduced as levels within the gaps.
 
-      Consider the following shifting operator with three gaps: 0-9, 11-199, and 201-999.
-      New universe levels that are made available are [0; 1; ...; 8; 9; 11; 12; ...; 198; 199; 201; 202; ...; 998; 999].
+      For example, the following shifting operator has three gaps: 0-9, 11-199, and 201-999, and belongs to the new class:
       {v
 f(0) = 10
 f(1) = 200
@@ -57,9 +57,10 @@ f(4) = 1002
 f(i) = i + 997 (for i >= 3)
 ...
       v}
+      New universe levels that will be made available by this function are 0, 1, ..., 8, 9, 11, 12, ..., 198, 199, 201, 202, ..., 998, and 999.
 
       The class of gapped functions is closed under identity and composition, and is strictly larger than the class in {!module:Crude}:
-      the functions in {!module:Crude} are the functions with [k = 0], or equivalently the functions with at most one gap in the beginning.
+      the functions in {!module:Crude} are the functions with [k = 0], or equivalently the functions with at most one gap in the very beginning.
   *)
 
   include S
