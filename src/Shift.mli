@@ -46,7 +46,7 @@ sig
       Technically, we consider all strictly monotone functions [f] such that [f(i) = i + n] when [i >= k] for some finite [k],
       where "gaps" may occur for levels [i < k], which means in-between universe levels can be introduced as levels within the gaps.
 
-      For example, the following shifting operator has three gaps: 0-9, 11-199, and 201-999, and belongs to the new class:
+      For example, the following shifting operator has three gaps: 0-9, 11-199, and 201-999:
       {v
 f(0) = 10
 f(1) = 200
@@ -92,7 +92,7 @@ f(n+k+1) = init + s0 + s1 + ... + sn + k
   (** [of_skipped] can be used to create any shifting operator in this class.
       [of_skipped l] gives the shifting operator that skips the levels in [l]. The numbers in [l] should be non-negative and strictly increasing.
       For example, [of_skipped [0; 1]] is equivalent [const 2] and [of_steps ~init:2 []] because the first two levels are skipped.
-      [of_skipped [3]] is equivalent to [of_steps ~init:0 [1;1;2]] because all of them correspond to the function
+      [of_skipped [3]] is equivalent to [of_steps ~init:0 [1;1;2]] because both correspond to the function
       {v
 f(0) = 0
 f(1) = 1
@@ -103,9 +103,9 @@ f(4) = 5
       v}
       [of_skipped [0; 1; 2; 4; 5; 7]] is equivalent to [of_steps ~init:3 [3; 2]] because both correspond to the function
       {v
-f(0) = 3
-f(1) = 6
-f(2) = 8
+f(0) = 3 (skipping 0, 1, and 2)
+f(1) = 6 (skipping 4 and 5)
+f(2) = 8 (skipping 7)
 f(3) = 9
 ...
       v}
