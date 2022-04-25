@@ -13,6 +13,8 @@ sig
   val equal : level -> level -> bool
   val lt : level -> level -> bool
   val le : level -> level -> bool
+  val (<) : level -> level -> bool
+  val (<=) : level -> level -> bool
 end
 
 module Make (P : Param) : S with module Shift = P.Shift and type var = P.var =
@@ -41,4 +43,7 @@ struct
     | (Var vx, sx), (Var vy, sy) ->
       equal_var vx vy && Shift.le (Option.value ~default:Shift.id sx) (Option.value ~default:Shift.id sy)
     | _ -> false
+
+  let (<) = lt
+  let (<=) = le
 end

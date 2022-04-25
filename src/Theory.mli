@@ -31,6 +31,12 @@ sig
 
   (** [le l1 l2] checks whether [l1] is less than or equal to [l2]. Note that trichotomy fails for general universe levels. *)
   val le : level -> level -> bool
+
+  (** Alias of {!val:lt}. *)
+  val (<) : level -> level -> bool
+
+  (** Alias of {!val:le}. *)
+  val (<=) : level -> level -> bool
 end
 
 (** The universe level comparator. *)
