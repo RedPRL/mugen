@@ -1,4 +1,4 @@
 (library
- (name Mugenjou)
+ (name Mugen)
  (libraries bwd)
- (public_name mugenjou))
+ (public_name mugen))
