@@ -108,7 +108,7 @@ f(3) = 9
 ...
       v}
 
-      @raises Invalid_argument if any element in [l] is not non-negative or if [l] is not strictly increasing.
+      @raises Invalid_argument if any element in [l] is negative or if [l] is not strictly increasing.
   *)
 
   val of_prefix : int list -> t
@@ -120,7 +120,7 @@ f(3) = 9
       [of_prefix [0; 1; 2; 4]] is equivalent to [of_skipped [3]] and [of_steps [0; 1; 1; 2]].
       [of_prefix [3; 6; 8]] is equivalent to [of_skipped [0; 1; 2; 4; 5; 7]] and [of_steps [3; 3; 2]].
 
-      @raises Invalid_argument if any element in [l] is not non-negative or if [l] is not strictly increasing.
+      @raises Invalid_argument if any element in [l] is negative or if [l] is not strictly increasing.
   *)
 end
 type gapped = Gapped.t
