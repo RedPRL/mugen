@@ -33,7 +33,7 @@ sig
   type t
   val id : t
   val const : int -> t
-  val of_steps : init:int -> int list -> t
+  val of_steps : int list -> t
   val of_skipped : int list -> t
   val of_prefix : int list -> t
   val is_id : t -> bool
@@ -55,9 +55,12 @@ struct
 
   let drop_trailing_ones l =
     List.fold_right (fun x xs -> match x, xs with 1, [] -> [] | _ -> x :: xs) l []
-  let of_steps ~init steps =
-    if init < 0 || List.exists (fun i -> i < 1) steps then invalid_arg "Shift.Gapped.of_steps";
-    {init; steps = drop_trailing_ones steps}
+  let of_steps =
+    function
+    | [] -> id
+    | init :: steps ->
+      if init < 0 || List.exists (fun i -> i < 1) steps then invalid_arg "Shift.Gapped.of_steps";
+      {init; steps = drop_trailing_ones steps}
 
   let rec drop_trailing_ones_bwd =
     function Snoc (xs, 1) -> drop_trailing_ones_bwd xs | b -> BwdLabels.to_list b

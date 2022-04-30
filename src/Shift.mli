@@ -66,33 +66,31 @@ f(i) = i + 997 (for i >= 3)
   include S
   (** @closed *)
 
-  val of_steps : init:int -> int list -> t
+  val of_steps : int list -> t
   (** [of_steps] can be used to create any shifting operator in this class.
-      [of_steps ~init [s0; s1; s2; ...; sn]] is the following function:
+      [of_steps [s0; s1; s2; ...; sn]] is the following function:
       {v
-f(0) = init
-f(1) = init + s0
-f(2) = init + s0 + s1
+f(0) = s0
+f(1) = s0 + s1
+f(2) = s0 + s1 + s2
 ...
-f(i) = init + s0 + s1 + ... + s(i-1)
+f(i) = s0 + s1 + s2 + ... + si
 ...
-f(n) = init + s0 + s1 + ... + s(n-1)
-f(n+1) = init + s0 + s1 + ... + sn
-f(n+2) = init + s0 + s1 + ... + sn + 1
-f(n+3) = init + s0 + s1 + ... + sn + 2
+f(n) = s0 + s1 + s2 + ... + sn
+f(n+1) = s0 + s1 + s2 + ... + sn + 1
 ...
-f(n+k+1) = init + s0 + s1 + ... + sn + k
+f(n+k) = s0 + s1 + s2 + ... + sn + k
 ...
       v}
-      As a special case, [of_steps ~init []] is equivalent to [const init].
+      As a special case, [of_steps []] is equivalent to [id].
 
-      @raises Invalid_argument if [init < 0] or [si < 1] for any [i]. *)
+      @raises Invalid_argument if [s0 < 0] or [si < 1] for any [i > 0]. *)
 
   val of_skipped : int list -> t
   (** [of_skipped] can be used to create any shifting operator in this class.
       [of_skipped l] gives the shifting operator that skips the levels in [l]. The numbers in [l] should be non-negative and strictly increasing.
-      For example, [of_skipped [0; 1]] is equivalent [const 2] and [of_steps ~init:2 []] because the first two levels are skipped.
-      [of_skipped [3]] is equivalent to [of_steps ~init:0 [1;1;2]] because both correspond to the function
+      For example, [of_skipped [0; 1]] is equivalent [const 2] and [of_steps [2]] because the first two levels are skipped.
+      [of_skipped [3]] is equivalent to [of_steps [0; 1; 1; 2]] because both correspond to the function
       {v
 f(0) = 0
 f(1) = 1
@@ -101,7 +99,7 @@ f(3) = 4 (skipping 3)
 f(4) = 5
 ...
       v}
-      [of_skipped [0; 1; 2; 4; 5; 7]] is equivalent to [of_steps ~init:3 [3; 2]] because both correspond to the function
+      [of_skipped [0; 1; 2; 4; 5; 7]] is equivalent to [of_steps [3; 3; 2]] because both correspond to the function
       {v
 f(0) = 3 (skipping 0, 1, and 2)
 f(1) = 6 (skipping 4 and 5)
@@ -118,9 +116,9 @@ f(3) = 9
       [of_prefix l] gives the shifting operator whose prefix is [l] and whose gaps are clearly marked in [l].
       As a special case, [of_prefix []] is equivalent to {!val:id}.
 
-      For example, [of_prefix [2]] is equivalent to [of_skipped [0; 1]], [const 2], and [of_steps ~init:2 []].
-      [of_prefix [0; 1; 2; 4]] is equivalent to [of_skipped [3]] and [of_steps ~init:0 [1;1;2]].
-      [of_prefix [3; 6; 8]] is equivalent to [of_skipped [0; 1; 2; 4; 5; 7]] and [of_steps ~init:3 [3; 2]].
+      For example, [of_prefix [2]] is equivalent to [of_skipped [0; 1]], [const 2], and [of_steps [2]].
+      [of_prefix [0; 1; 2; 4]] is equivalent to [of_skipped [3]] and [of_steps [0; 1; 1; 2]].
+      [of_prefix [3; 6; 8]] is equivalent to [of_skipped [0; 1; 2; 4; 5; 7]] and [of_steps [3; 3; 2]].
 
       @raises Invalid_argument if any element in [l] is not non-negative or if [l] is not strictly increasing.
   *)
