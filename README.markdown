@@ -1,4 +1,4 @@
-# 🌌 Universe Levels
+# ♾️ Mugen 無限: Universe Levels
 
 An overly functorized implementation of [Conor McBride’s crude but effective stratification](https://personal.cis.strath.ac.uk/conor.mcbride/Crude.pdf) and its slight generalization.
 
