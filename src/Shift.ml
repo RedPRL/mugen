@@ -34,6 +34,8 @@ end
 struct
   type t = {scale : int; trans : int} (* [f(i) = i * scale + trans] *)
 
+  let (=) = Int.equal
+
   let id = {scale = 1; trans = 0}
 
   let trans trans =
@@ -54,10 +56,10 @@ struct
     Int.equal s0.trans s1.trans
 
   let lt s0 s1 =
-    s0.scale <= s1.scale && s0.trans < s1.trans
+    s0.scale < s1.scale || (s0.scale = s1.scale && s0.trans < s1.trans)
 
   let le s0 s1 =
-    s0.scale <= s1.scale && s0.trans <= s1.trans
+    s0.scale < s1.scale || (s0.scale = s1.scale && s0.trans <= s1.trans)
 
   let compose s0 s1 =
     {scale = s0.scale * s1.scale;
