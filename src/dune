@@ -1,4 +1,3 @@
 (library
  (name Mugen)
- (libraries bwd)
  (public_name mugen))

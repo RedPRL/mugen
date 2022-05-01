@@ -7,10 +7,10 @@ sig
   (** [id] is the identity (no shifting). *)
   val id : t
 
-  (** [const n] is the constant shifting [fun i -> i + n].
+  (** [trans n] is the translation [fun i -> i + n].
 
       @raises Invalid_argument if [n < 0]. *)
-  val const : int -> t
+  val trans : int -> t
 
   (** [is_id s] checkes whether [s] is the identity. *)
   val is_id : t -> bool
@@ -34,3 +34,19 @@ end
 (** Conor McBride's crude stratification that contains only `f(i) = i + n`. *)
 module Crude : S
 type crude = Crude.t
+
+(** Generalized {!module:Crude} that allows scaling. *)
+module Linear :
+sig
+  (** The motivation is to enable insertion of universe levels between any two consecutive levels, which is something
+      the function in {!module:Crude} cannot do.
+      The idea is to introduce scaling so that we are considering [f(i) = i * n1 + n0] instead of just [f(i) = i + n].
+  *)
+
+  (** @closed *)
+  include S
+
+  (** [scale n] is the scaling [fun i -> i * n]. *)
+  val scale : int -> t
+end
+type linear = Linear.t

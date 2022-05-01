@@ -23,18 +23,18 @@ struct
     include P
     open Syntax.Endo
 
+    let top = level Top
+
     let shifted l s =
       if Shift.is_id s then l
       else
         match unlevel l with
-        | Some Top -> level Top
+        | Some Top -> top
         | Some (Shifted (l, s')) ->
           let s = Shift.compose s' s in
           level @@ Shifted (l, s)
         | None ->
           level @@ Shifted (l, s)
-
-    let top = level Top
 
     let reduce_shifts =
       function
