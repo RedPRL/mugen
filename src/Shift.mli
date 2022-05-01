@@ -31,7 +31,7 @@ sig
   val dump : Format.formatter -> t -> unit
 end
 
-(** Conor McBride's crude stratification that contains only `f(i) = i + n`. *)
+(** Conor McBride's crude stratification that contains only [fun i -> i + n]. *)
 module Crude : S
 type crude = Crude.t
 
@@ -40,7 +40,7 @@ module Linear :
 sig
   (** The motivation is to enable insertion of universe levels between any two consecutive levels, which is something
       the function in {!module:Crude} cannot do.
-      The idea is to introduce scaling so that we are considering [f(i) = i * n1 + n0] instead of just [f(i) = i + n].
+      The idea is to introduce scaling so that we are considering [fun i -> i * n1 + n0] instead of just [fun i -> i + n].
   *)
 
   (** @closed *)
@@ -50,3 +50,25 @@ sig
   val scale : int -> t
 end
 type linear = Linear.t
+
+(** Another generalized {!module:Crude} that allows scaling and post increments. *)
+module LinearPostInc :
+sig
+  (** The motivation is to enable insertion of universe levels between any two consecutive levels, which is something
+      the function in {!module:Crude} cannot do.
+      The idea is to introduce scaling and post increments so that we are considering the higher-order functions
+      [fun f i -> f (i * n1 + n0) + n2] instead of just [fun i -> i + n].
+
+      The function [g] from levels to levels is embedded into the class of higher-order functions as [fun f i -> f (g i)].
+  *)
+
+  (** @closed *)
+  include S
+
+  (** [scale n] is the scaling [fun f i -> f (i * n)] (the embedding of [fun i -> i * n]). *)
+  val scale : int -> t
+
+  (** [postinc n] is the post increment [fun f i -> f i + n]. *)
+  val postinc : int -> t
+end
+type lpi = LinearPostInc.t

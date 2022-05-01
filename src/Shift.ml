@@ -52,8 +52,8 @@ struct
     | _ -> false
 
   let equal s0 s1 =
-    Int.equal s0.scale s1.scale &&
-    Int.equal s0.trans s1.trans
+    s0.scale = s1.scale &&
+    s0.trans = s1.trans
 
   let lt s0 s1 =
     s0.scale < s1.scale || (s0.scale = s1.scale && s0.trans < s1.trans)
@@ -77,3 +77,74 @@ struct
       Format.fprintf fmt "(fun i -> i * %i + %i)" scale trans
 end
 type linear = Linear.t
+
+module LinearPostInc :
+sig
+  include S
+  val scale : int -> t
+  val postinc : int -> t
+end
+=
+struct
+  type t = {scale : int; trans : int; postinc : int}
+  (* [g(f) = (fun i -> i + postinc) . f . (fun i -> i * scale + trans)] *)
+
+  let id = {scale = 1; trans = 0; postinc = 0}
+
+  let trans trans =
+    if trans < 0 then invalid_arg "Shift.LinearPostInc.translate";
+    {scale = 1; trans; postinc = 0}
+
+  let scale scale =
+    if scale < 1 then invalid_arg "Shift.LinearPostInc.scale";
+    {scale; trans = 0; postinc = 0}
+
+  let postinc postinc =
+    if postinc < 0 then invalid_arg "Shift.LinearPostInc.postinc";
+    {scale = 1; trans = 0; postinc}
+
+  let is_id =
+    function
+    | {scale = 1; trans = 0; postinc = 0} -> true
+    | _ -> false
+
+  let equal s0 s1 =
+    s0.scale = s1.scale &&
+    s0.trans = s1.trans &&
+    s0.postinc = s1.postinc
+
+  let lt s0 s1 =
+    s0.scale < s1.scale
+    || (s0.scale = s1.scale && s0.trans < s1.trans)
+    || (s0.scale = s1.scale && s0.trans = s1.trans && s0.postinc < s1.postinc)
+
+  let le s0 s1 =
+    s0.scale < s1.scale
+    || (s0.scale = s1.scale && s0.trans < s1.trans)
+    || (s0.scale = s1.scale && s0.trans = s1.trans && s0.postinc <= s1.postinc)
+
+  let compose s0 s1 =
+    {scale = s0.scale * s1.scale;
+     trans = s0.scale * s1.trans + s0.trans;
+     postinc = s0.postinc + s1.postinc}
+
+  let dump fmt =
+    function
+    | {scale = 1; trans = 0; postinc = 0} ->
+      Format.fprintf fmt "(fun f i -> f i)"
+    | {scale = 1; trans = 0; postinc} ->
+      Format.fprintf fmt "(fun f i -> f i + %i)" postinc
+    | {scale; trans = 0; postinc = 0} ->
+      Format.fprintf fmt "(fun f i -> f (i * %i))" scale
+    | {scale; trans = 0; postinc} ->
+      Format.fprintf fmt "(fun f i -> f (i * %i) + %i)" scale postinc
+    | {scale = 1; trans; postinc = 0} ->
+      Format.fprintf fmt "(fun f i -> f (i + %i))" trans
+    | {scale = 1; trans; postinc} ->
+      Format.fprintf fmt "(fun f i -> f (i + %i) + %i)" trans postinc
+    | {scale; trans; postinc = 0} ->
+      Format.fprintf fmt "(fun f i -> f (i * %i + %i))" scale trans
+    | {scale; trans; postinc} ->
+      Format.fprintf fmt "(fun f i -> f (i * %i + %i) + %i)" scale trans postinc
+end
+type lpi = LinearPostInc.t
