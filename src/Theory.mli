@@ -14,14 +14,14 @@ end
 (** The signature of universe level comparators. *)
 module type S =
 sig
-  (** The class of shifting operators. *)
-  module Shift : Shift.S
+  (** The type of shifting operators. *)
+  type shift
 
   (** The type of level variables. *)
   type var
 
   (** The type of freely generated levels. *)
-  type level = (Shift.t, var) Syntax.free
+  type level = (shift, var) Syntax.free
 
   (** [equal l1 l2] checks whether [l1] and [l2] are the same universe level. *)
   val equal : level -> level -> bool
@@ -55,4 +55,4 @@ sig
 end
 
 (** The universe level comparator. *)
-module Make (P : Param) : S with module Shift = P.Shift and type var = P.var
+module Make (P : Param) : S with type shift := P.Shift.t and type var := P.var

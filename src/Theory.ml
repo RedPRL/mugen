@@ -7,9 +7,9 @@ end
 
 module type S =
 sig
-  module Shift : Shift.S
+  type shift
   type var
-  type level = (Shift.t, var) Syntax.free
+  type level = (shift, var) Syntax.free
   val equal : level -> level -> bool
   val lt : level -> level -> bool
   val le : level -> level -> bool
@@ -22,7 +22,7 @@ sig
   val (>=) : level -> level -> bool
 end
 
-module Make (P : Param) : S with module Shift = P.Shift and type var = P.var =
+module Make (P : Param) : S with type shift := P.Shift.t and type var := P.var =
 struct
   open Syntax.Free
   include P

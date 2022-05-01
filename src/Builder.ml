@@ -10,15 +10,15 @@ struct
 
   module type S =
   sig
-    module Shift : Shift.S
+    type shift
     type level
-    val shifted : level -> Shift.t -> level
+    val shifted : level -> shift -> level
     val top : level
     val simplify : level -> level
-    val dissect : level -> level * Shift.t option
+    val dissect : level -> level * shift option
   end
 
-  module Make (P : Param) : S with module Shift := P.Shift and type level = P.level =
+  module Make (P : Param) : S with type shift := P.Shift.t and type level := P.level =
   struct
     include P
     open Syntax.Endo
@@ -69,15 +69,15 @@ struct
 
   module type S =
   sig
-    module Shift : Shift.S
+    type shift
     type var
-    type level = (Shift.t, var) Syntax.free
+    type level = (shift, var) Syntax.free
 
     val var : var -> level
-    include Endo.S with module Shift := Shift and type level := level
+    include Endo.S with type shift := shift and type level := level
   end
 
-  module Make (P : Param) : S  with module Shift := P.Shift and type var = P.var =
+  module Make (P : Param) : S with type shift := P.Shift.t and type var := P.var =
   struct
     open Syntax.Free
 
