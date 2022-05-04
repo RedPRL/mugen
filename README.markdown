@@ -1,6 +1,6 @@
 # ♾️ Mugen 無限: Universe Levels
 
-An overly functorized implementation of [Conor McBride’s crude but effective stratification](https://personal.cis.strath.ac.uk/conor.mcbride/Crude.pdf) and its slight generalization.
+An overly functorized implementation of [Conor McBride’s trans but effective stratification](https://personal.cis.strath.ac.uk/conor.mcbride/Trans.pdf) and its slight generalization.
 
 ## Stability
 
@@ -23,7 +23,7 @@ An overly functorized implementation of [Conor McBride’s crude but effective s
 
 In Conor McBride’s notes, it was noted that any class of strictly monotone operators on levels closed under identity and composition will work. Initially, the class of functions `f(i) = i + n` for `n >= 0` was chosen as it is practically the minimum usable class. This is implemented in this module:
 
-- [Mugen.Shift.Crude](https://redprl.org/mugen/mugen/Mugen/Shift/Crude): the class of functions `f(i) = i + n`.
+- [Mugen.Shift.Trans](https://redprl.org/mugen/mugen/Mugen/Shift/Trans): the class of functions `f(i) = i + n`.
 
 We are experimenting with other classes of strictly monotone functions.
 
@@ -39,9 +39,9 @@ You need OCaml 4.12 or later
 module MS = Mugen.Shift
 module M = Mugen.Syntax
 
-type ulevel = (MS.crude, string) M.free
+type ulevel = (MS.trans, string) M.free
 
-let l : ulevel = M.Free.(shifted (var "x") (MS.Crude.const 10))
+let l : ulevel = M.Free.(shifted (var "x") (MS.Trans.trans 10))
 ```
 
 ### Documentation

@@ -11,11 +11,11 @@ sig
   val dump : Format.formatter -> t -> unit
 end
 
-module Crude : S =
+module Trans : S =
 struct
   type t = int
   let id = 0
-  let trans x = if x < 0 then invalid_arg "Shift.Crude.trans"; x
+  let trans x = if x < 0 then invalid_arg "Shift.Trans.trans"; x
   let is_id = function 0 -> true | _ -> false
   let equal = Int.equal
   let lt : int -> int -> bool = (<)
@@ -23,7 +23,7 @@ struct
   let compose : int -> int -> int = (+)
   let dump = Format.pp_print_int
 end
-type crude = Crude.t
+type trans = Trans.t
 
 module Linear :
 sig
@@ -148,3 +148,56 @@ struct
       Format.fprintf fmt "(fun f i -> f (i * %i + %i) + %i)" scale trans postinc
 end
 type lpi = LinearPostInc.t
+
+module DualTrans :
+sig
+  include S
+  val secondary_trans : int -> t
+end
+=
+struct
+  type t = {trans : int; secondary_trans : int}
+
+  let id = {trans = 0; secondary_trans = 0}
+
+  let trans trans =
+    if trans < 0 then invalid_arg "Shift.LinearPostInc.translate";
+    {trans; secondary_trans = 0}
+
+  let secondary_trans secondary_trans =
+    if secondary_trans < 1 then invalid_arg "Shift.LinearPostInc.secondary_trans";
+    {trans = 0; secondary_trans}
+
+  let is_id =
+    function
+    | {trans = 0; secondary_trans = 0} -> true
+    | _ -> false
+
+  let equal s0 s1 =
+    s0.trans = s1.trans &&
+    s0.secondary_trans = s1.secondary_trans
+
+  let lt s0 s1 =
+    s0.trans < s1.trans
+    || (s0.trans = s1.trans && s0.secondary_trans < s1.secondary_trans)
+
+  let le s0 s1 =
+    s0.trans < s1.trans
+    || (s0.trans = s1.trans && s0.secondary_trans <= s1.secondary_trans)
+
+  let compose s0 s1 =
+    {trans = s1.trans + s0.trans;
+     secondary_trans = s0.secondary_trans + s1.secondary_trans}
+
+  let dump fmt =
+    function
+    | {trans = 0; secondary_trans = 0} ->
+      Format.fprintf fmt "(fun (x, y) -> (x, y))"
+    | {trans; secondary_trans = 0} ->
+      Format.fprintf fmt "(fun (x, y) -> (x + %i, y))" trans
+    | {trans = 0; secondary_trans} ->
+      Format.fprintf fmt "(fun (x, y) -> (x, y + %i))" secondary_trans
+    | {trans; secondary_trans} ->
+      Format.fprintf fmt "(fun (x, y) -> (x + %i, y + %i))" trans secondary_trans
+end
+type dual_trans = DualTrans.t

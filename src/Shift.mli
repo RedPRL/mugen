@@ -31,11 +31,11 @@ sig
   val dump : Format.formatter -> t -> unit
 end
 
-(** Conor McBride's crude stratification that contains only [fun i -> i + n]. *)
-module Crude : S
-type crude = Crude.t
+(** Translation. *)
+module Trans : S
+type trans = Trans.t
 
-(** Generalized {!module:Crude} that allows scaling. *)
+(** Translation and scaling. *)
 module Linear :
 sig
   (** The motivation is to enable insertion of universe levels between any two consecutive levels, which is something
@@ -51,7 +51,7 @@ sig
 end
 type linear = Linear.t
 
-(** Another generalized {!module:Crude} that allows scaling and post increments. *)
+(** Translation, scaling, and post increments. *)
 module LinearPostInc :
 sig
   (** The motivation is to enable insertion of universe levels between any two consecutive levels, which is something
@@ -72,3 +72,14 @@ sig
   val postinc : int -> t
 end
 type lpi = LinearPostInc.t
+
+(** Class of dual translation. *)
+module DualTrans :
+sig
+  (** @closed *)
+  include S
+
+  (** Secondary translation. *)
+  val secondary_trans : int -> t
+end
+type dual_trans = DualTrans.t
