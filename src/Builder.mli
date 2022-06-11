@@ -5,7 +5,7 @@ sig
   (** Parameters of smart constructors. *)
   module type Param =
   sig
-    (** The class of shifting operators. *)
+    (** The class of shifting operators. It is assumed that [Shift.compose] is associative. *)
     module Shift : Shift.S
 
     (** The type that embeds levels. *)

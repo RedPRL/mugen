@@ -12,9 +12,9 @@ sig
   type level = (shift, var) Syntax.free
   val equal : level -> level -> bool
   val lt : level -> level -> bool
-  val le : level -> level -> bool
+  val leq : level -> level -> bool
   val gt : level -> level -> bool
-  val ge : level -> level -> bool
+  val geq : level -> level -> bool
   val (=) : level -> level -> bool
   val (<) : level -> level -> bool
   val (<=) : level -> level -> bool
@@ -42,19 +42,19 @@ struct
       equal_var vx vy && Shift.lt (Option.value ~default:Shift.id sx) (Option.value ~default:Shift.id sy)
     | _ -> false
 
-  let le x y =
+  let leq x y =
     match dissect x, dissect y with
     | _, (Level Top, _) -> true
     | (Var vx, sx), (Var vy, sy) ->
-      equal_var vx vy && Shift.le (Option.value ~default:Shift.id sx) (Option.value ~default:Shift.id sy)
+      equal_var vx vy && Shift.leq (Option.value ~default:Shift.id sx) (Option.value ~default:Shift.id sy)
     | _ -> false
 
   let gt x y = lt y x
-  let ge x y = le y x
+  let geq x y = leq y x
 
   let (=) = equal
   let (<) = lt
-  let (<=) = le
+  let (<=) = leq
   let (>) = gt
-  let (>=) = ge
+  let (>=) = geq
 end
