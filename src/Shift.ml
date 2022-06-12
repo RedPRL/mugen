@@ -1,25 +1,25 @@
+open StructuredType
+
 module type S =
 sig
-  type t
+  include PartiallyOrderedType
   val id : t
-  val equal : t -> t -> bool
   val is_id : t -> bool
-  val lt : t -> t -> bool
-  val leq : t -> t -> bool
   val compose : t -> t -> t
-  val dump : Format.formatter -> t -> unit
 end
 
 module Int :
 sig
   include S
-  val int : int -> t
+  val of_int : int -> t
+  val to_int : t -> int
 end
 =
 struct
   type t = int
+  let of_int x : t = x
+  let to_int x : int = x
   let id = 0
-  let int x = x
   let equal = Int.equal
   let is_id = function 0 -> true | _ -> false
   let lt : int -> int -> bool = (<)
@@ -31,180 +31,42 @@ end
 module WithConst (Base : S) :
 sig
   include S
-  val apply : Base.t -> t
+  val act : Base.t -> t
   val const : Base.t -> t
 end
 =
 struct
-  type t = Apply of Base.t | Const of Base.t
-  let apply x = Apply x
+  type t = Act of Base.t | Const of Base.t
+  let act x = Act x
   let const x = Const x
-  let id = apply Base.id
+  let id = act Base.id
   let equal x y =
     match x, y with
-    | Apply x, Apply y -> Base.equal x y
+    | Act x, Act y -> Base.equal x y
     | Const x, Const y -> Base.equal x y
     | _ -> false
-  let is_id = function Apply s -> Base.is_id s | _ -> false
+  let is_id = function Act s -> Base.is_id s | _ -> false
   let lt x y =
     match x, y with
-    | Apply x, Apply y -> Base.lt x y
+    | Act x, Act y -> Base.lt x y
     | Const x, Const y -> Base.lt x y
     | _ -> false
   let leq x y =
     match x, y with
-    | Apply x, Apply y -> Base.leq x y
+    | Act x, Act y -> Base.leq x y
     | Const x, Const y -> Base.leq x y
     | _ -> false
   let compose x y =
     match x, y with
     | _, Const _ -> y
-    | Const x, Apply y -> const (Base.compose x y)
-    | Apply x, Apply y -> apply (Base.compose x y)
+    | Const x, Act y -> const (Base.compose x y)
+    | Act x, Act y -> act (Base.compose x y)
   let dump fmt =
     function
     | Const x ->
       Format.fprintf fmt "@[<1>(const@ @[%a@])@]" Base.dump x
-    | Apply x ->
-      Format.fprintf fmt "@[<1>(apply@ @[%a@])@]" Base.dump x
-end
-
-module type MultiExpr =
-sig
-  type var
-  type t
-  val var : var -> t
-  val subst : (var -> t) -> t -> t
-  val equal : t -> t -> bool
-  val lt : t -> t -> bool
-  val leq : t -> t -> bool
-  val dump : Format.formatter -> t -> unit
-end
-
-module type OrderedType =
-sig
-  include Map.OrderedType
-  val dump : Format.formatter -> t -> unit
-end
-
-module Semilattice (Var : OrderedType) :
-sig
-  include MultiExpr
-  val nat : int -> t
-  val succ : t -> t
-  val max : t -> t -> t
-end
-=
-struct
-  type var = Var.t
-  module M = Map.Make (Var)
-  (* invariants: max vars <= const *)
-  type t = { const : Stdlib.Int.t; vars : Stdlib.Int.t M.t }
-
-  let nat n =
-    if n < 0 then invalid_arg "Shift.MultiNat.Expr.nat";
-    { const = n; vars = M.empty }
-  let zero = nat 0
-  let var v = { const = 0; vars = M.singleton v 0 }
-  let trans n e =
-    { const = e.const + n
-    ; vars = M.map (fun l -> l + n) e.vars
-    }
-  let succ e = trans 1 e
-  let max e1 e2 =
-    { const = Stdlib.Int.max e1.const e2.const
-    ; vars = M.union (fun _ x y -> Some (Stdlib.Int.max x y)) e1.vars e2.vars
-    }
-  let equal e1 e2 =
-    Stdlib.Int.equal e1.const e2.const && M.equal Stdlib.Int.equal e1.vars e2.vars
-  let lt e1 e2 =
-    e1.const < e2.const &&
-    M.for_all (fun v s1 -> match M.find_opt v e2.vars with Some s2 -> s1 < s2 | None -> false) e1.vars
-  let leq e1 e2 =
-    e1.const <= e2.const &&
-    M.for_all (fun v s1 -> match M.find_opt v e2.vars with Some s2 -> s1 <= s2 | None -> false) e1.vars
-  let subst f e =
-    max (nat e.const) @@
-    M.fold (fun v i e -> max (trans i (f v)) e) e.vars zero
-  let dump_vars fmt vs =
-    Format.pp_print_seq
-      ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ",@,")
-      (fun fmt (v, n) ->
-         if n = 0 then
-           Format.fprintf fmt ".@[%a@]" Var.dump v
-         else
-           Format.fprintf fmt "@[.@[%a@]@,+%i@]" Var.dump v n)
-      fmt
-      (M.to_seq vs)
-  let dump fmt e =
-    if M.is_empty e.vars then
-      Format.pp_print_int fmt e.const
-    else if e.const = 0 then
-      Format.fprintf fmt "@[<2>max(%a)@]" dump_vars e.vars
-    else
-      Format.fprintf fmt "@[<2>%i@,+max(%a)@]" e.const dump_vars e.vars
-end
-
-module Multi (V : OrderedType) (E : MultiExpr with type var = V.t) :
-sig
-  include S
-  type expr = E.t
-  val singleton : V.t -> E.t -> t
-  val find : V.t -> t -> expr
-  val update : V.t -> expr -> t -> t
-  val of_seq : (V.t * expr) Seq.t -> t
-end
-=
-struct
-  module M = Map.Make (V)
-
-  type expr = E.t
-  type t = expr M.t
-
-  let singleton v e = M.singleton v e
-  let find v s = Option.value ~default:(E.var v) (M.find_opt v s)
-  let update v e s = M.add v e s
-  let of_seq s = M.of_seq s
-
-  let id = M.empty
-
-  let zip s1 s2 =
-    M.merge
-      (fun v e1 e2 ->
-         let e1 = Option.value ~default:(E.var v) e1
-         and e2 = Option.value ~default:(E.var v) e2
-         in
-         Some (e1, e2))
-      s1 s2
-
-  let equal s1 s2 =
-    M.for_all (fun _ (e1, e2) -> E.equal e1 e2) (zip s1 s2)
-
-  let is_id s = M.for_all (fun k e -> E.equal (E.var k) e) s
-
-  let lt s1 s2 =
-    M.for_all (fun _ (e1, e2) -> E.lt e1 e2) (zip s1 s2)
-
-  let leq s1 s2 =
-    let s1s2 = zip s1 s2 in
-    M.for_all (fun _ (e1, e2) -> E.leq e1 e2) s1s2 &&
-    M.exists (fun _ (e1, e2) -> E.lt e1 e2) s1s2
-
-  let subst s e = E.subst (fun v -> find v s) e
-
-  let compose s1 s2 =
-    M.merge (fun _ e2 e1 ->
-        match e2 with
-        | None -> e1
-        | Some e2 -> Some (subst s1 e2))
-      s2 s1
-
-  let dump fmt s =
-    Format.fprintf fmt "{%a}"
-      (Format.pp_print_seq
-         ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ",@,")
-         (fun fmt (v, e) -> Format.fprintf fmt "@[.@[%a@]@,=%a@]" V.dump v E.dump e))
-      (M.to_seq s)
+    | Act x ->
+      Format.fprintf fmt "@[<1>(act@ @[%a@])@]" Base.dump x
 end
 
 module Fractal (Base : S) :
@@ -262,12 +124,20 @@ module LexicalPair (X : S) (Y : S) :
 sig
   include S
   val pair : X.t -> Y.t -> t
+  val fst : t -> X.t
+  val snd : t -> Y.t
+  val inl : X.t -> t
+  val inr : Y.t -> t
 end
 =
 struct
   type t = X.t * Y.t
 
   let pair x y : t = x, y
+  let fst (xy : t) = fst xy
+  let snd (xy : t) = snd xy
+  let inl x = x, Y.id
+  let inr y = X.id, y
 
   let id = X.id, Y.id
 
@@ -285,14 +155,7 @@ struct
     Format.fprintf fmt "@[<2>(pair@ @[%a@]@ @[%a@])@]" X.dump x Y.dump y
 end
 
-module type TypeWithEquality =
-sig
-  type t
-  val equal : t -> t -> bool
-  val dump : Format.formatter -> t -> unit
-end
-
-module Prefix (Base : TypeWithEquality) :
+module Prefix (Base : EqualityType) :
 sig
   include S
   val prepend : Base.t -> t -> t
@@ -328,4 +191,24 @@ struct
     Format.fprintf fmt "@[<1>[%a]@]"
       (Format.pp_print_list ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ";@,") Base.dump)
       x
+end
+
+module Inverted (Base : S) : S
+=
+struct
+  type t = Base.t
+
+  let id = Base.id
+
+  let is_id = Base.is_id
+
+  let equal = Fun.flip Base.equal
+
+  let lt = Fun.flip  Base.lt
+
+  let leq = Fun.flip  Base.leq
+
+  let compose = Base.compose
+
+  let dump = Base.dump
 end

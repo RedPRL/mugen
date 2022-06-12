@@ -44,13 +44,13 @@ sig
   (** Alias of {!val:lt}. *)
   val (<) : level -> level -> bool
 
-  (** Alias of {!val:le}. *)
+  (** Alias of {!val:leq}. *)
   val (<=) : level -> level -> bool
 
   (** Alias of {!val:gt}. *)
   val (>) : level -> level -> bool
 
-  (** Alias of {!val:ge}. *)
+  (** Alias of {!val:geq}. *)
   val (>=) : level -> level -> bool
 end
 
