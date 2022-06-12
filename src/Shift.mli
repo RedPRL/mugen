@@ -45,16 +45,23 @@ end
 
 module type MultiExpr =
 sig
+  type var
   type t
-  val var : int -> t
-  val subst : (int -> t) -> t -> t
+  val var : var -> t
+  val subst : (var -> t) -> t -> t
   val equal : t -> t -> bool
   val lt : t -> t -> bool
   val leq : t -> t -> bool
   val dump : Format.formatter -> t -> unit
 end
 
-module Semilattice :
+module type OrderedType =
+sig
+  include Map.OrderedType
+  val dump : Format.formatter -> t -> unit
+end
+
+module Semilattice (Var : OrderedType) :
 sig
   include MultiExpr
   val nat : int -> t
@@ -62,14 +69,14 @@ sig
   val max : t -> t -> t
 end
 
-module Multi (E : MultiExpr) :
+module Multi (V : OrderedType) (E : MultiExpr with type var = V.t) :
 sig
   include S
   type expr = E.t
-  val singleton : int -> E.t -> t
-  val find : int -> t -> expr
-  val update : int -> expr -> t -> t
-  val of_seq : (int * expr) Seq.t -> t
+  val singleton : V.t -> E.t -> t
+  val find : V.t -> t -> expr
+  val update : V.t -> expr -> t -> t
+  val of_seq : (V.t * expr) Seq.t -> t
 end
 
 module Fractal (Base : S) :

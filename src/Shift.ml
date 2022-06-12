@@ -71,16 +71,23 @@ end
 
 module type MultiExpr =
 sig
+  type var
   type t
-  val var : int -> t
-  val subst : (int -> t) -> t -> t
+  val var : var -> t
+  val subst : (var -> t) -> t -> t
   val equal : t -> t -> bool
   val lt : t -> t -> bool
   val leq : t -> t -> bool
   val dump : Format.formatter -> t -> unit
 end
 
-module Semilattice :
+module type OrderedType =
+sig
+  include Map.OrderedType
+  val dump : Format.formatter -> t -> unit
+end
+
+module Semilattice (Var : OrderedType) :
 sig
   include MultiExpr
   val nat : int -> t
@@ -89,8 +96,8 @@ sig
 end
 =
 struct
-  module M = Map.Make (Stdlib.Int)
-
+  type var = Var.t
+  module M = Map.Make (Var)
   (* invariants: max vars <= const *)
   type t = { const : Stdlib.Int.t; vars : Stdlib.Int.t M.t }
 
@@ -121,35 +128,35 @@ struct
     M.fold (fun v i e -> max (trans i (f v)) e) e.vars zero
   let dump_vars fmt vs =
     Format.pp_print_seq
-      ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ",")
+      ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ",@,")
       (fun fmt (v, n) ->
          if n = 0 then
-           Format.fprintf fmt ".%i" v
+           Format.fprintf fmt ".@[%a@]" Var.dump v
          else
-           Format.fprintf fmt ".%i+%i" v n)
+           Format.fprintf fmt "@[.@[%a@]@,+%i@]" Var.dump v n)
       fmt
       (M.to_seq vs)
   let dump fmt e =
     if M.is_empty e.vars then
       Format.pp_print_int fmt e.const
     else if e.const = 0 then
-      Format.fprintf fmt "max(%a)" dump_vars e.vars
+      Format.fprintf fmt "@[<2>max(%a)@]" dump_vars e.vars
     else
-      Format.fprintf fmt "%i+max(%a)" e.const dump_vars e.vars
+      Format.fprintf fmt "@[<2>%i@,+max(%a)@]" e.const dump_vars e.vars
 end
 
-module Multi (E : MultiExpr) :
+module Multi (V : OrderedType) (E : MultiExpr with type var = V.t) :
 sig
   include S
   type expr = E.t
-  val singleton : int -> E.t -> t
-  val find : int -> t -> expr
-  val update : int -> expr -> t -> t
-  val of_seq : (int * expr) Seq.t -> t
+  val singleton : V.t -> E.t -> t
+  val find : V.t -> t -> expr
+  val update : V.t -> expr -> t -> t
+  val of_seq : (V.t * expr) Seq.t -> t
 end
 =
 struct
-  module M = Map.Make (Stdlib.Int)
+  module M = Map.Make (V)
 
   type expr = E.t
   type t = expr M.t
@@ -195,8 +202,8 @@ struct
   let dump fmt s =
     Format.fprintf fmt "{%a}"
       (Format.pp_print_seq
-         ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ",")
-         (fun fmt (v, e) -> Format.fprintf fmt ".%i=%a" v E.dump e))
+         ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ",@,")
+         (fun fmt (v, e) -> Format.fprintf fmt "@[.@[%a@]@,=%a@]" V.dump v E.dump e))
       (M.to_seq s)
 end
 
