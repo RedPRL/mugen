@@ -142,3 +142,16 @@ sig
   include S
   val pair : X.t -> Y.t -> t
 end
+
+module type TypeWithEquality =
+sig
+  type t
+  val equal : t -> t -> bool
+  val dump : Format.formatter -> t -> unit
+end
+
+module Prefix (Base : TypeWithEquality) :
+sig
+  include S
+  val prepend : Base.t -> t -> t
+end

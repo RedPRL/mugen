@@ -284,3 +284,48 @@ struct
   let dump fmt (x, y) =
     Format.fprintf fmt "@[<2>(pair@ @[%a@]@ @[%a@])@]" X.dump x Y.dump y
 end
+
+module type TypeWithEquality =
+sig
+  type t
+  val equal : t -> t -> bool
+  val dump : Format.formatter -> t -> unit
+end
+
+module Prefix (Base : TypeWithEquality) :
+sig
+  include S
+  val prepend : Base.t -> t -> t
+end
+=
+struct
+  type t = Base.t list
+
+  let prepend x xs = x :: xs
+
+  let id = []
+
+  let is_id l = l = []
+
+  let equal x y = List.equal Base.equal x y
+
+  let rec lt x y =
+    match x, y with
+    | [], [] -> false
+    | [], _::_ -> true
+    | _::_, [] -> false
+    | x::xs, y::ys -> Base.equal x y && lt xs ys
+
+  let rec leq x y =
+    match x, y with
+    | [], _ -> true
+    | _::_, [] -> false
+    | x::xs, y::ys -> Base.equal x y && leq xs ys
+
+  let compose x y = x @ y
+
+  let dump fmt x =
+    Format.fprintf fmt "@[<1>[%a]@]"
+      (Format.pp_print_list ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ";@,") Base.dump)
+      x
+end
