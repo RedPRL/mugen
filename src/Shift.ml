@@ -232,7 +232,7 @@ struct
     | [], [] -> false
     | [], _ -> true
     | _::_, [] -> false
-    | x::xs, y::ys -> x < y || x = y && lt (<) (=) xs ys
+    | x::xs, y::ys -> x < y || (x = y && lt (<) (=) xs ys)
 
   let lt (i1, is1) (i2, is2) = lt Base.lt Base.equal (i1 :: is1) (i2 :: is2)
 
@@ -240,7 +240,7 @@ struct
     match xs, ys with
     | [], _ -> true
     | _::_, [] -> false
-    | x::xs, y::ys -> x < y || x = y && leq (<) (=) xs ys
+    | x::xs, y::ys -> x < y || (x = y && leq (<) (=) xs ys)
 
   let leq (i1, is1) (i2, is2) = leq Base.leq Base.equal (i1 :: is1) (i2 :: is2)
 
@@ -256,4 +256,31 @@ struct
       Format.fprintf fmt "@[<2>(%a)@]"
         (Format.pp_print_list ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ")@,.(") Base.dump)
         (s :: ss)
+end
+
+module LexicalPair (X : S) (Y : S) :
+sig
+  include S
+  val pair : X.t -> Y.t -> t
+end
+=
+struct
+  type t = X.t * Y.t
+
+  let pair x y : t = x, y
+
+  let id = X.id, Y.id
+
+  let is_id (x, y) = X.is_id x && Y.is_id y
+
+  let equal (x1, y1) (x2, y2) = X.equal x1 x2 && Y.equal y1 y2
+
+  let lt (x1, y1) (x2, y2) = X.lt x1 x2 || (X.equal x1 x2 && Y.lt y1 y2)
+
+  let leq (x1, y1) (x2, y2) = X.lt x1 x2 || (X.equal x1 x2 && Y.leq y1 y2)
+
+  let compose (x1, y1) (x2, y2) = X.compose x1 x2, Y.compose y1 y2
+
+  let dump fmt (x, y) =
+    Format.fprintf fmt "@[<2>(pair@ @[%a@]@ @[%a@])@]" X.dump x Y.dump y
 end

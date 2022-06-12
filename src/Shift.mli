@@ -19,7 +19,7 @@ sig
   (** [leq x y] checks if [x] is less than or equal to [y]. Note that trichotomy fails for general partial orders. *)
   val leq : t -> t -> bool
 
-  (** [compose s0 s1] composes the operators [s0] and [s1]. Note that [Foo^k1^k2] in McBride's notation is understood as [compose (compose ... k2) k1]. *)
+  (** [compose s1 s2] composes the operators [s1] and [s2]. Note that [Foo^s1^s2] in McBride's notation is understood as [compose (compose ... s2) s1] with the reversed order. *)
   val compose : t -> t -> t
 
   (** Ugly printer. *)
@@ -108,7 +108,7 @@ sig
   (** @closed *)
   include S
 
-(** type of expressions *)
+  (** type of expressions *)
   type expr = E.t
 
   (** One-variable substitution. *)
@@ -134,4 +134,11 @@ sig
 
   (** [push b s] pushes [s] to the sub-level and applies [b] to the main level. *)
   val push : Base.t -> t -> t
+end
+
+(** Pairs using the lexicographical order. *)
+module LexicalPair (X : S) (Y : S) :
+sig
+  include S
+  val pair : X.t -> Y.t -> t
 end
