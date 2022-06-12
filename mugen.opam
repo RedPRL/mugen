@@ -10,7 +10,7 @@ bug-reports: "https://github.com/RedPRL/makubex/issues"
 dev-repo: "git+https://github.com/RedPRL/makubex.git"
 depends: [
   "dune" {>= "2.0"}
-  "ocaml" {>= "4.12"}
+  "ocaml" {>= "4.13"}
   "odoc" {with-doc}
 ]
 build: [
