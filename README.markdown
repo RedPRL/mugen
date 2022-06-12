@@ -23,9 +23,9 @@ An overly functorized implementation of [Conor McBride’s trans but effective s
 
 In Conor McBride’s notes, it was noted that any class of strictly monotone operators on levels closed under identity and composition will work. Initially, the class of functions `f(i) = i + n` for `n >= 0` was chosen as it is practically the minimum usable class. This is implemented in this module:
 
-- [Mugen.Shift.Trans](https://redprl.org/mugen/mugen/Mugen/Shift/Trans): the class of functions `f(i) = i + n`.
+- [Mugen.Shift.Int](https://redprl.org/mugen/mugen/Mugen/Shift/Int): the class of functions `f(i) = i + n`.
 
-We are experimenting with other classes of strictly monotone functions.
+We are experimenting with many other classes.
 
 ## How to Use It
 
