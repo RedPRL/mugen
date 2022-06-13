@@ -29,9 +29,9 @@ We are experimenting with many other classes.
 
 ## How to Use It
 
-### OCaml >= 4.12
+### OCaml >= 4.13
 
-You need OCaml 4.12 or later
+You need OCaml 4.13 or later
 
 ### Example Code
 
