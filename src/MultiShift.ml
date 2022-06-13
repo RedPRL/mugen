@@ -103,9 +103,19 @@ end
 module Make (Var : OrderedType) (Base : BoundedSemilattice) :
 sig
   include Shift.S
+
+  module Expr :
+  sig
+    include PartiallyOrderedType
+    val var : Var.t -> t
+    val subst : (Var.t -> t) -> t -> t
+    val join : t -> t -> t
+    val const : Base.t -> t
+    val act : Base.t -> t -> t
+  end
   val join : t -> t -> t
-  val of_seq : (Var.t * LiftToExpr(Var)(Base).t) Seq.t -> t
-  val to_seq : t -> (Var.t * LiftToExpr(Var)(Base).t) Seq.t
+  val of_seq : (Var.t * Expr.t) Seq.t -> t
+  val to_seq : t -> (Var.t * Expr.t) Seq.t
 end
 =
 struct

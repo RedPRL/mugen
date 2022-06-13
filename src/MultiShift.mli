@@ -23,7 +23,7 @@ end
 module LexicalPair (X : BoundedSemilattice) (Y : BoundedSemilattice) :
 sig
   (** @closed *)
-  include BoundedSemilattice with type t = Shift.LexicalPair(X)(Y).t
+  include BoundedSemilattice
 
   val pair : X.t -> Y.t -> t
   val fst : t -> X.t
@@ -32,35 +32,35 @@ sig
   val inr : Y.t -> t
 end
 
-(** Level expressions with variables for {!module:Multi} *)
-module LiftToExpr (Var : OrderedType) (Base : BoundedSemilattice) :
-sig
-  (** @closed *)
-  include PartiallyOrderedType
-
-  (** [var v] is the variable [v] as an expression. *)
-  val var : Var.t -> t
-
-  (** [subst f e] substitutes every variable [v] in [e] with [f v]. *)
-  val subst : (Var.t -> t) -> t -> t
-
-  (** [join x y] is the maximum of [x] and [y]. *)
-  val join : t -> t -> t
-
-  (** [const s] is the embedding of [s]. *)
-  val const : Base.t -> t
-
-  (** [act s l] applies [s] to the expression [l]. *)
-  val act : Base.t -> t -> t
-end
-
-(** Multiple variables *)
+(** Substitutions. *)
 module Make (Var : OrderedType) (Base : BoundedSemilattice) :
 sig
   (** @closed *)
   include Shift.S
 
+  (** Level expressions. *)
+  module Expr :
+  sig
+    (** @closed *)
+    include PartiallyOrderedType
+
+    (** [var v] is the variable [v] as an expression. *)
+    val var : Var.t -> t
+
+    (** [subst f e] substitutes every variable [v] in [e] with [f v]. *)
+    val subst : (Var.t -> t) -> t -> t
+
+    (** [join x y] is the maximum of [x] and [y]. *)
+    val join : t -> t -> t
+
+    (** [const s] is the embedding of [s]. *)
+    val const : Base.t -> t
+
+    (** [act s l] applies [s] to the expression [l]. *)
+    val act : Base.t -> t -> t
+  end
+
   val join : t -> t -> t
-  val of_seq : (Var.t * LiftToExpr(Var)(Base).t) Seq.t -> t
-  val to_seq : t -> (Var.t * LiftToExpr(Var)(Base).t) Seq.t
+  val of_seq : (Var.t * Expr.t) Seq.t -> t
+  val to_seq : t -> (Var.t * Expr.t) Seq.t
 end
