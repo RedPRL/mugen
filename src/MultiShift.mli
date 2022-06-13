@@ -44,9 +44,6 @@ sig
   (** [subst f e] substitutes every variable [v] in [e] with [f v]. *)
   val subst : (Var.t -> t) -> t -> t
 
-  (** [bot] is the minimum expression. This is equivalent to [const Base.bot] *)
-  val bot : t
-
   (** [join x y] is the maximum of [x] and [y]. *)
   val join : t -> t -> t
 
