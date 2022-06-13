@@ -115,7 +115,7 @@ struct
     if ss = [] then
       Base.dump fmt s
     else
-      Format.fprintf fmt "@[<2>(%a)@]"
+      Format.fprintf fmt "@[<1>(%a)@]"
         (Format.pp_print_list ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ")@,.(") Base.dump)
         (s :: ss)
 end
@@ -152,7 +152,65 @@ struct
   let compose (x1, y1) (x2, y2) = X.compose x1 x2, Y.compose y1 y2
 
   let dump fmt (x, y) =
-    Format.fprintf fmt "@[<2>(pair@ @[%a@]@ @[%a@])@]" X.dump x Y.dump y
+    Format.fprintf fmt "@[<1>(pair@ @[%a@]@ @[%a@])@]" X.dump x Y.dump y
+end
+
+module InfiniteProduct (Base : S) :
+sig
+  include S
+  val of_list : Base.t list -> t
+  val to_list : t -> Base.t list
+end
+=
+struct
+  (* invariants: no ending id *)
+  type t = Base.t list
+
+  let rec strip_ids : Base.t list -> t =
+    function
+    | [] -> []
+    | [s] -> if Base.is_id s then [] else [s]
+    | s::ss ->
+      let ss = strip_ids ss in
+      if ss = [] && Base.is_id s then [] else s::ss
+
+  let of_list l : t = strip_ids l
+  let to_list (l : t) = l
+
+  let id : t = []
+
+  let is_id (s : t) = s = []
+
+  let rec for_all2 f l1 l2 =
+    match l1, l2 with
+    | [], [] -> true
+    | l1, [] -> List.for_all (fun x1 -> f x1 Base.id) l1
+    | [], l2 -> List.for_all (fun x2 -> f Base.id x2) l2
+    | x::xs, y::ys -> f x y && for_all2 f xs ys
+
+  let rec exists2 f l1 l2 =
+    match l1, l2 with
+    | [], [] -> false
+    | l1, [] -> List.exists (fun x1 -> f x1 Base.id) l1
+    | [], l2 -> List.exists (fun x2 -> f Base.id x2) l2
+    | x::xs, y::ys -> f x y || exists2 f xs ys
+
+  let equal l1 l2 = for_all2 Base.equal l1 l2
+
+  let lt l1 l2 = for_all2 Base.leq l1 l2 && exists2 Base.lt l1 l2
+
+  let leq l1 l2 = for_all2 Base.leq l1 l2
+
+  let rec compose l1 l2 =
+    match l1, l2 with
+    | [], [] -> []
+    | l, [] | [], l -> l
+    | x::xs, y::ys -> Base.compose x y :: compose xs ys
+
+  let dump fmt x =
+    Format.fprintf fmt "@[<1>[%a]@]"
+      (Format.pp_print_list ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ";@,") Base.dump)
+      x
 end
 
 module Prefix (Base : EqualityType) :

@@ -65,6 +65,16 @@ sig
   val inr : Y.t -> t
 end
 
+(** The infinite product of the base class. *)
+module InfiniteProduct (Base : S) :
+sig
+  (** @closed *)
+  include S
+
+  val of_list : Base.t list -> t
+  val to_list : t -> Base.t list
+end
+
 (** Prefix order. *)
 module Prefix (Base : EqualityType) :
 sig
