@@ -1,46 +1,69 @@
 open StructuredType
 
+module type BoundedSemilattice =
+sig
+  include Shift.S
+
+  (** [bot] is the minimum value. *)
+  val bot : t
+
+  (** [join x y] is the maximum of [x] and [y]. *)
+  val join : t -> t -> t
+end
+
+module Nat :
+sig
+  (** @closed *)
+  include BoundedSemilattice
+
+  val of_int : int -> t
+  val to_int : t -> int
+end
+
+module LexicalPair (X : BoundedSemilattice) (Y : BoundedSemilattice) :
+sig
+  (** @closed *)
+  include BoundedSemilattice with type t = Shift.LexicalPair(X)(Y).t
+
+  val pair : X.t -> Y.t -> t
+  val fst : t -> X.t
+  val snd : t -> Y.t
+  val inl : X.t -> t
+  val inr : Y.t -> t
+end
+
 (** Level expressions with variables for {!module:Multi} *)
-module type Expr =
+module LiftToExpr (Var : OrderedType) (Base : BoundedSemilattice) :
 sig
   (** @closed *)
   include PartiallyOrderedType
 
-  (** Type of variables. *)
-  type var
-
   (** [var v] is the variable [v] as an expression. *)
-  val var : var -> t
+  val var : Var.t -> t
 
   (** [subst f e] substitutes every variable [v] in [e] with [f v]. *)
-  val subst : (var -> t) -> t -> t
-end
+  val subst : (Var.t -> t) -> t -> t
 
-(** Reduction of multi variables. *)
-module Multi (Var : OrderedType) (Expr : Expr with type var := Var.t) :
-sig
-  (** @closed *)
-  include Shift.S
-
-  val of_seq : (Var.t * Expr.t) Seq.t -> t
-  val to_seq : t -> (Var.t * Expr.t) Seq.t
-end
-
-(** An instance of [Expr] inspired by Agda and Lean. *)
-module LiftBoundedSemilattice (Var : OrderedType) (Base : BoundedSemilattice.S) :
-sig
-  (** @closed *)
-  include Expr with type var := Var.t
-
-  (** [bot] is the minimum expression. *)
+  (** [bot] is the minimum expression. This is equivalent to [const Base.bot] *)
   val bot : t
 
-  (** [join x y] is the maximum value of [x] and [y]. *)
+  (** [join x y] is the maximum of [x] and [y]. *)
   val join : t -> t -> t
 
-  (** [const n] represents the constant level [n]. *)
+  (** [const s] is the embedding of [s]. *)
   val const : Base.t -> t
 
   (** [act s l] applies [s] to the expression [l]. *)
   val act : Base.t -> t -> t
+end
+
+(** Multiple variables *)
+module Make (Var : OrderedType) (Base : BoundedSemilattice) :
+sig
+  (** @closed *)
+  include Shift.S
+
+  val join : t -> t -> t
+  val of_seq : (Var.t * LiftToExpr(Var)(Base).t) Seq.t -> t
+  val to_seq : t -> (Var.t * LiftToExpr(Var)(Base).t) Seq.t
 end
