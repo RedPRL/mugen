@@ -89,22 +89,22 @@ struct
   let equal (i1, is1) (i2, is2) =
     List.equal Base.equal (i1 :: is1) (i2 :: is2)
 
-  let rec lt (<) (=) xs ys =
+  let rec lt xs ys =
     match xs, ys with
     | [], [] -> false
     | [], _ -> true
     | _::_, [] -> false
-    | x::xs, y::ys -> x < y || (x = y && lt (<) (=) xs ys)
+    | x::xs, y::ys -> Base.lt x y || (Base.equal x y && lt xs ys)
 
-  let lt (i1, is1) (i2, is2) = lt Base.lt Base.equal (i1 :: is1) (i2 :: is2)
+  let lt (i1, is1) (i2, is2) = lt (i1 :: is1) (i2 :: is2)
 
-  let rec leq (<) (=) xs ys =
+  let rec leq xs ys =
     match xs, ys with
     | [], _ -> true
     | _::_, [] -> false
-    | x::xs, y::ys -> x < y || (x = y && leq (<) (=) xs ys)
+    | x::xs, y::ys -> Base.lt x y || (Base.equal x y && leq xs ys)
 
-  let leq (i1, is1) (i2, is2) = leq Base.leq Base.equal (i1 :: is1) (i2 :: is2)
+  let leq (i1, is1) (i2, is2) = leq (i1 :: is1) (i2 :: is2)
 
   let rec compose s1 s2 =
     match s1, s2 with
