@@ -48,6 +48,15 @@ sig
   val inr : Y.t -> t
 end
 
+module InfiniteProduct (Base : Semilattice) :
+sig
+  (** @closed *)
+  include Semilattice
+
+  val of_list : Base.t list -> t
+  val to_list : t -> Base.t list
+end
+
 (** Substitutions. *)
 module Make (Var : OrderedType) (Base : Semilattice) :
 sig

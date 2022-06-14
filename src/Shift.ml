@@ -201,15 +201,13 @@ struct
 
   let leq l1 l2 = for_all2 Base.leq l1 l2
 
-  let rec compose l1 l2 =
+  let rec compose_ l1 l2 =
     match l1, l2 with
     | [], [] -> []
     | l, [] | [], l -> l
-    | x::xs, y::ys ->
-      let z = Base.compose x y
-      and zs = compose xs ys
-      in
-      if Base.is_id z && zs = [] then [] else z :: zs
+    | x::xs, y::ys -> Base.compose x y :: compose_ xs ys
+
+  let compose l1 l2 = strip_ids @@ compose_ l1 l2
 
   let dump fmt x =
     Format.fprintf fmt "@[<1>[%a]@]"
