@@ -1,14 +1,30 @@
 open StructuredType
 
-module type BoundedSemilattice =
+module type Semilattice =
 sig
+  (** @closed *)
   include Shift.S
-
-  (** [bot] is the minimum value. *)
-  val bot : t
 
   (** [join x y] is the maximum of [x] and [y]. *)
   val join : t -> t -> t
+end
+
+module type BoundedSemilattice =
+sig
+  (** @closed *)
+  include Semilattice
+
+  (** [bot] is the minimum value. *)
+  val bot : t
+end
+
+module Int :
+sig
+  (** @closed *)
+  include Semilattice
+
+  val of_int : int -> t
+  val to_int : t -> int
 end
 
 module Nat :
@@ -33,7 +49,7 @@ sig
 end
 
 (** Substitutions. *)
-module Make (Var : OrderedType) (Base : BoundedSemilattice) :
+module Make (Var : OrderedType) (Base : Semilattice) :
 sig
   (** @closed *)
   include Shift.S

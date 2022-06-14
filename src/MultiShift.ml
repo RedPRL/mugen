@@ -1,26 +1,37 @@
 open StructuredType
 
-module type BoundedSemilattice =
+module type Semilattice =
 sig
   include Shift.S
-  val bot : t
   val join : t -> t -> t
+end
+
+module type BoundedSemilattice =
+sig
+  include Semilattice
+  val bot : t
+end
+
+module Int =
+struct
+  include Shift.Int
+  let join x y = of_int (Int.max (to_int x) (to_int y))
 end
 
 module Nat =
 struct
-  type t = Shift.Int.t
-  let of_int x = if x < 0 then invalid_arg "BoundedSemilattice.Nat.of_int"; Shift.Int.of_int x
-  let bot = of_int 0
-  let id = Shift.Int.id
-  let to_int = Shift.Int.to_int
-  let equal = Shift.Int.equal
-  let is_id = Shift.Int.is_id
-  let lt = Shift.Int.lt
-  let leq = Shift.Int.leq
-  let compose = Shift.Int.compose
-  let join x y = of_int (Int.max (to_int x) (to_int y))
-  let dump = Shift.Int.dump
+  type t = int
+  let of_int x = if x < 0 then invalid_arg "MultiShift.Nat.of_int"; x
+  let bot = 0
+  let id = 0
+  let to_int x = x
+  let equal = Stdlib.Int.equal
+  let is_id x = x = 0
+  let lt : t -> t -> bool = (<)
+  let leq : t -> t -> bool = (<=)
+  let compose : t -> t -> t = (+)
+  let join : t -> t -> t = Stdlib.Int.max
+  let dump = Format.pp_print_int
 end
 
 module LexicalPair (X : BoundedSemilattice) (Y : BoundedSemilattice) =
@@ -41,11 +52,7 @@ struct
     pair join_fst join_snd
 end
 
-module type Expr =
-sig
-end
-
-module LiftToExpr (Var : OrderedType) (Base : BoundedSemilattice) :
+module LiftToExpr (Var : OrderedType) (Base : Semilattice) :
 sig
   include PartiallyOrderedType
   val var : Var.t -> t
@@ -100,7 +107,7 @@ struct
       Format.fprintf fmt "@[<2>join(@,@[%a@],@,@[<2>join(@,@[%a@])@])@]" Base.dump e.const dump_vars e.vars
 end
 
-module Make (Var : OrderedType) (Base : BoundedSemilattice) :
+module Make (Var : OrderedType) (Base : Semilattice) :
 sig
   include Shift.S
 
