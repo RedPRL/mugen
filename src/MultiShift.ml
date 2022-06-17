@@ -34,22 +34,11 @@ struct
   let dump = Format.pp_print_int
 end
 
-module LexicalPair (X : BoundedSemilattice) (Y : BoundedSemilattice) =
+module BinaryProduct (X : Semilattice) (Y : Semilattice) =
 struct
-  include Shift.LexicalPair (X) (Y)
+  include Shift.BinaryProduct (X) (Y)
 
-  let bot = pair X.bot Y.bot
-
-  let join x y =
-    let join_fst = X.join (fst x) (fst y) in
-    let join_snd =
-      match X.equal (fst x) join_fst, X.equal (fst y) join_fst with
-      | false, false -> Y.bot
-      | true, false -> snd x
-      | false, true -> snd y
-      | true, true -> Y.join (snd x) (snd y)
-    in
-    pair join_fst join_snd
+  let join s1 s2 = pair (X.join (fst s1) (fst s2)) (Y.join (snd s1) (snd s2))
 end
 
 module InfiniteProduct (Base : Semilattice) :
@@ -71,6 +60,20 @@ struct
     | x::xs, y::ys -> Base.join x y :: join_list xs ys
 
   let join l1 l2 = of_list (join_list (to_list l1) (to_list l2))
+end
+
+module LexicalBinaryProduct (X : BoundedSemilattice) (Y : BoundedSemilattice) =
+struct
+  include Shift.LexicalBinaryProduct (X) (Y)
+
+  let bot = pair X.bot Y.bot
+
+  let join s1 s2 =
+    let x = X.join (fst s1) (fst s2) in
+    let y1 = if X.equal (fst s1) x then snd s1 else Y.bot
+    and y2 = if X.equal (fst s2) x then snd s2 else Y.bot
+    in
+    pair x (Y.join y1 y2)
 end
 
 module LiftToExpr (Var : OrderedType) (Base : Semilattice) :

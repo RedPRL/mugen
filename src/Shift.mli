@@ -52,8 +52,8 @@ sig
   val push : Base.t -> t -> t
 end
 
-(** Pairs using the lexicographical order. *)
-module LexicalPair (X : S) (Y : S) :
+(** Binary products. *)
+module BinaryProduct (X : S) (Y : S) :
 sig
   (** @closed *)
   include S
@@ -73,6 +73,19 @@ sig
 
   val of_list : Base.t list -> t
   val to_list : t -> Base.t list
+end
+
+(** Binary products but using the lexicographical order. *)
+module LexicalBinaryProduct (X : S) (Y : S) :
+sig
+  (** @closed *)
+  include S
+
+  val pair : X.t -> Y.t -> t
+  val fst : t -> X.t
+  val snd : t -> Y.t
+  val inl : X.t -> t
+  val inr : Y.t -> t
 end
 
 (** Prefix order. *)

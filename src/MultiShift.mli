@@ -36,10 +36,10 @@ sig
   val to_int : t -> int
 end
 
-module LexicalPair (X : BoundedSemilattice) (Y : BoundedSemilattice) :
+module BinaryProduct (X : Semilattice) (Y : Semilattice) :
 sig
   (** @closed *)
-  include BoundedSemilattice
+  include Semilattice
 
   val pair : X.t -> Y.t -> t
   val fst : t -> X.t
@@ -55,6 +55,18 @@ sig
 
   val of_list : Base.t list -> t
   val to_list : t -> Base.t list
+end
+
+module LexicalBinaryProduct (X : BoundedSemilattice) (Y : BoundedSemilattice) :
+sig
+  (** @closed *)
+  include BoundedSemilattice
+
+  val pair : X.t -> Y.t -> t
+  val fst : t -> X.t
+  val snd : t -> Y.t
+  val inl : X.t -> t
+  val inr : Y.t -> t
 end
 
 (** Substitutions. *)

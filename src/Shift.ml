@@ -120,7 +120,7 @@ struct
         (s :: ss)
 end
 
-module LexicalPair (X : S) (Y : S) :
+module BinaryProduct (X : S) (Y : S) :
 sig
   include S
   val pair : X.t -> Y.t -> t
@@ -145,9 +145,9 @@ struct
 
   let equal (x1, y1) (x2, y2) = X.equal x1 x2 && Y.equal y1 y2
 
-  let lt (x1, y1) (x2, y2) = X.lt x1 x2 || (X.equal x1 x2 && Y.lt y1 y2)
+  let lt (x1, y1) (x2, y2) = (X.lt x1 x2 && Y.leq y1 y2) || (X.equal x1 x2 && Y.lt y1 y2)
 
-  let leq (x1, y1) (x2, y2) = X.lt x1 x2 || (X.equal x1 x2 && Y.leq y1 y2)
+  let leq (x1, y1) (x2, y2) = X.leq x1 x2 && Y.leq y1 y2
 
   let compose (x1, y1) (x2, y2) = X.compose x1 x2, Y.compose y1 y2
 
@@ -213,6 +213,41 @@ struct
     Format.fprintf fmt "@[<1>[%a]@]"
       (Format.pp_print_list ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ";@,") Base.dump)
       x
+end
+
+module LexicalBinaryProduct (X : S) (Y : S) :
+sig
+  include S
+  val pair : X.t -> Y.t -> t
+  val fst : t -> X.t
+  val snd : t -> Y.t
+  val inl : X.t -> t
+  val inr : Y.t -> t
+end
+=
+struct
+  type t = X.t * Y.t
+
+  let pair x y : t = x, y
+  let fst (xy : t) = fst xy
+  let snd (xy : t) = snd xy
+  let inl x = x, Y.id
+  let inr y = X.id, y
+
+  let id = X.id, Y.id
+
+  let is_id (x, y) = X.is_id x && Y.is_id y
+
+  let equal (x1, y1) (x2, y2) = X.equal x1 x2 && Y.equal y1 y2
+
+  let lt (x1, y1) (x2, y2) = X.lt x1 x2 || (X.equal x1 x2 && Y.lt y1 y2)
+
+  let leq (x1, y1) (x2, y2) = X.lt x1 x2 || (X.equal x1 x2 && Y.leq y1 y2)
+
+  let compose (x1, y1) (x2, y2) = X.compose x1 x2, Y.compose y1 y2
+
+  let dump fmt (x, y) =
+    Format.fprintf fmt "@[<1>(pair@ @[%a@]@ @[%a@])@]" X.dump x Y.dump y
 end
 
 module Prefix (Base : EqualityType) :
