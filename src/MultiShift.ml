@@ -131,20 +131,26 @@ struct
       Format.fprintf fmt "@[<2>join(@,@[%a@],@,@[<2>join(@,@[%a@])@])@]" Base.dump e.const dump_vars e.vars
 end
 
-module Make (Var : OrderedType) (Base : Semilattice) :
+module type Expression =
+sig
+  type var
+  type base
+  include PartiallyOrderedType
+  val var : var -> t
+  val subst : (var -> t) -> t -> t
+  val join : t -> t -> t
+  val const : base -> t
+  val act : base -> t -> t
+end
+
+module MakeEndo (Var : OrderedType) (Base : Semilattice) :
 sig
   include Shift.S
 
-  module Expr :
-  sig
-    include PartiallyOrderedType
-    val var : Var.t -> t
-    val subst : (Var.t -> t) -> t -> t
-    val join : t -> t -> t
-    val const : Base.t -> t
-    val act : Base.t -> t -> t
-  end
+  module Expr : Expression with type var := Var.t and type base := Base.t
+
   val join : t -> t -> t
+  val subst : t -> Expr.t -> Expr.t
   val of_seq : (Var.t * Expr.t) Seq.t -> t
   val to_seq : t -> (Var.t * Expr.t) Seq.t
 end
@@ -198,4 +204,33 @@ struct
          ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ",@,")
          (fun fmt (v, e) -> Format.fprintf fmt "@[.@[%a@]@,=%a@]" Var.dump v Expr.dump e))
       (M.to_seq s)
+end
+
+module Make (Var : OrderedType) (Base : Semilattice) :
+sig
+  include Shift.S
+
+  module Expr : Expression with type var := Var.t and type base := Base.t
+
+  val expr : Expr.t -> t
+  val of_subst : (Var.t * Expr.t) Seq.t -> t
+  val to_either : t -> ((Var.t * Expr.t) Seq.t, Expr.t) Either.t
+end
+=
+struct
+  module Endo = MakeEndo(Var)(Base)
+  module M = Shift.Constant(Endo)(struct
+      include Endo.Expr
+      let act e s = Endo.subst s e
+    end)
+  module Expr = Endo.Expr
+
+  include M
+
+  let expr x = const x
+  let of_subst s = act (Endo.of_seq s)
+  let to_either x =
+    match M.to_either x with
+    | Either.Left x -> Either.Left (Endo.to_seq x)
+    | Either.Right x -> Either.Right x
 end

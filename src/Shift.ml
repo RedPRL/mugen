@@ -35,7 +35,7 @@ sig
   val act : t -> act -> t
 end
 
-module Constant (Base : S) (Const : RightAction with type act = Base.t) :
+module Constant (Base : S) (Const : RightAction with type act := Base.t) :
 sig
   include S
   val act : Base.t -> t
