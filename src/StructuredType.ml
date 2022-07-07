@@ -1,12 +1,3 @@
-module type OrderedType =
-sig
-  (** @closed *)
-  include Map.OrderedType
-
-  (** Ugly printer. *)
-  val dump : Format.formatter -> t -> unit
-end
-
 module type EqualityType =
 sig
   (** The type. *)
