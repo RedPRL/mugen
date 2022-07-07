@@ -21,3 +21,15 @@ sig
   (** [leq x y] checks if [x] is less than or equal to [y]. Note that trichotomy fails for general partial orders. *)
   val leq : t -> t -> bool
 end
+
+module type PartiallyOrderedTypeWithRightAction =
+sig
+  (** @closed *)
+  include PartiallyOrderedType
+
+  (** the underlying type of an algebra *)
+  type act
+
+  (** the right action *)
+  val act : t -> act -> t
+end

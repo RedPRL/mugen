@@ -26,32 +26,20 @@ sig
   val to_int : t -> int
 end
 
-module type RightAction =
-sig
-  (** @closed *)
-  include PartiallyOrderedType
-
-  (** the underlying type of a displacement algebra *)
-  type act
-
-  (** the type of right displacement actions *)
-  val act : t -> act -> t
-end
-
 (** Augmentation with constants. *)
-module Constant (Base : S) (Const : RightAction with type act := Base.t) :
+module Constant (Act : S) (Const : PartiallyOrderedTypeWithRightAction with type act := Act.t) :
 sig
   (** @closed *)
   include S
 
   (** [act s] represents actions. *)
-  val act : Base.t -> t
+  val act : Act.t -> t
 
   (** [const s] represents constants. *)
   val const : Const.t -> t
 
   (** [to_either] convert an element to a value of type [Either.t] *)
-  val to_either : t -> (Base.t, Const.t) Either.t
+  val to_either : t -> (Act.t, Const.t) Either.t
 end
 
 (** Fractal universe levels. *)

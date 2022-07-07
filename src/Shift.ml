@@ -28,57 +28,57 @@ struct
   let dump = Format.pp_print_int
 end
 
-module type RightAction =
+module type PartiallyOrderedTypeWithRightAction =
 sig
   include PartiallyOrderedType
   type act
   val act : t -> act -> t
 end
 
-module Constant (Base : S) (Const : RightAction with type act := Base.t) :
+module Constant (Act : S) (Const : PartiallyOrderedTypeWithRightAction with type act := Act.t) :
 sig
   include S
-  val act : Base.t -> t
+  val act : Act.t -> t
   val const : Const.t -> t
-  val to_either : t -> (Base.t, Const.t) Either.t
+  val to_either : t -> (Act.t, Const.t) Either.t
 end
 =
 struct
-  type t = Act of Base.t | Const of Const.t
+  type t = Act of Act.t | Const of Const.t
   let act x = Act x
   let const x = Const x
   let to_either =
     function
     | Act x -> Either.Left x
     | Const x -> Either.Right x
-  let id = act Base.id
+  let id = act Act.id
   let equal x y =
     match x, y with
-    | Act x, Act y -> Base.equal x y
+    | Act x, Act y -> Act.equal x y
     | Const x, Const y -> Const.equal x y
     | _ -> false
-  let is_id = function Act s -> Base.is_id s | _ -> false
+  let is_id = function Act s -> Act.is_id s | _ -> false
   let lt x y =
     match x, y with
-    | Act x, Act y -> Base.lt x y
+    | Act x, Act y -> Act.lt x y
     | Const x, Const y -> Const.lt x y
     | _ -> false
   let leq x y =
     match x, y with
-    | Act x, Act y -> Base.leq x y
+    | Act x, Act y -> Act.leq x y
     | Const x, Const y -> Const.leq x y
     | _ -> false
   let compose x y =
     match x, y with
     | _, Const _ -> y
     | Const x, Act y -> const (Const.act x y)
-    | Act x, Act y -> act (Base.compose x y)
+    | Act x, Act y -> act (Act.compose x y)
   let dump fmt =
     function
     | Const x ->
       Format.fprintf fmt "@[<1>(const@ @[%a@])@]" Const.dump x
     | Act x ->
-      Format.fprintf fmt "@[<1>(act@ @[%a@])@]" Base.dump x
+      Format.fprintf fmt "@[<1>(act@ @[%a@])@]" Act.dump x
 end
 
 module Fractal (Base : S) :
