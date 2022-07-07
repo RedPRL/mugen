@@ -1,6 +1,6 @@
 # ♾️ Mugen 無限: Universe Levels
 
-An overly functorized implementation of [Conor McBride’s trans but effective stratification](https://personal.cis.strath.ac.uk/conor.mcbride/Trans.pdf) and its slight generalization.
+A vast generalization of [Conor McBride’s crude but effective stratification](https://personal.cis.strath.ac.uk/conor.mcbride/Crude.pdf).
 
 ## Stability
 
@@ -8,22 +8,23 @@ An overly functorized implementation of [Conor McBride’s trans but effective s
 
 ## Components
 
-- [Mugen.Shift](https://redprl.org/mugen/mugen/Mugen/Shift): classes of level shifting operators
-- [Mugen.Syntax](https://redprl.org/mugen/mugen/Mugen/Syntax): universe levels
+- [Mugen.Shift](https://redprl.org/mugen/mugen/Mugen/Shift): examples of displacement operators
+- [Mugen.MultiShift](https://redprl.org/mugen/mugen/Mugen/MultiShift): displacement operators for multiple variables
+- [Mugen.Syntax](https://redprl.org/mugen/mugen/Mugen/Syntax): syntax of universe levels
 - [Mugen.Builder](https://redprl.org/mugen/mugen/Mugen/Builder): smart builders of universe levels
 - [Mugen.Theory](https://redprl.org/mugen/mugen/Mugen/Theory): comparators for universe levels
 
 ## Philosophy and Beliefs in this Experiment
 
-1. The distinguished level variable should be made explicit so that everything has clear semantics.
+1. The distinguished level variable for top-level definitions should be explicit in the core language for clean semantics. (It can remain implicit in the surface language.)
 2. One-variable universe polymorphism with cumulativity is enough. Typical ambiguity (as in Coq) and multi-variable universe polymorphism (as in Agda) are overkill.
-3. It is convenient to have the top level.
+3. It is convenient to have the top level for type checking.
 
-## Classes of Level Shifting Operators
+## Classes of Displacement Operators
 
-In Conor McBride’s notes, it was noted that any class of strictly monotone operators on levels closed under identity and composition will work. Initially, the class of functions `f(i) = i + n` for `n >= 0` was chosen as it is practically the minimum usable class. This is implemented in this module:
+In Conor McBride’s notes, it was noted that any class of strictly monotone operators on levels closed under identity and composition will work. We have generalized the scheme with a general algebra of displacements. The classic displacement operators may be recovered by using the following modules with non-negative numbers.
 
-- [Mugen.Shift.Int](https://redprl.org/mugen/mugen/Mugen/Shift/Int): the class of functions `f(i) = i + n`.
+- [Mugen.Shift.Int](https://redprl.org/mugen/mugen/Mugen/Shift/Int).
 
 We are experimenting with many other classes.
 
@@ -39,9 +40,9 @@ You need OCaml 4.13 or later
 module MS = Mugen.Shift
 module M = Mugen.Syntax
 
-type ulevel = (MS.trans, string) M.free
+type ulevel = (MS.Int.t, string) M.free
 
-let l : ulevel = M.Free.(shifted (var "x") (MS.Trans.trans 10))
+let l : ulevel = M.Free.(shifted (var "x") (MS.Int.of_int 10))
 ```
 
 ### Documentation
