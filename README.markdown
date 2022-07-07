@@ -9,7 +9,7 @@ A vast generalization of [Conor McBride’s crude but effective stratification](
 ## Components
 
 - [Mugen.Shift](https://redprl.org/mugen/mugen/Mugen/Shift): examples of displacement operators
-- [Mugen.MultiShift](https://redprl.org/mugen/mugen/Mugen/MultiShift): displacement operators for multiple variables
+- [Mugen.ShiftWithJoin](https://redprl.org/mugen/mugen/Mugen/ShiftWithJoin): more examples of displacement operators with joins
 - [Mugen.Syntax](https://redprl.org/mugen/mugen/Mugen/Syntax): syntax of universe levels
 - [Mugen.Builder](https://redprl.org/mugen/mugen/Mugen/Builder): smart builders of universe levels
 - [Mugen.Theory](https://redprl.org/mugen/mugen/Mugen/Theory): comparators for universe levels

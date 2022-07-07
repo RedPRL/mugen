@@ -39,7 +39,7 @@ sig
 end
 
 (** Augmentation with constants. *)
-module Constant (Base : S) (Const : RightAction with type act = Base.t) :
+module Constant (Base : S) (Const : RightAction with type act := Base.t) :
 sig
   (** @closed *)
   include S
