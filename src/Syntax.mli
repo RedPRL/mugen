@@ -1,9 +1,9 @@
-(** A family of polynomial endofunctors [('s, -) endo] indexed by the class of shifting operators ['s]. *)
+(** A family of polynomial endofunctors [('s, -) endo] indexed by the type of displacements ['s]. *)
 type ('s, 'a) endo =
   | Shifted of 'a * 's
   | Top
 
-(** The free monad [('s, -) free] on the endofunctor [('s, -) endo] indexed by the class of shifting operators ['s]. *)
+(** The free monad [('s, -) free] on the endofunctor [('s, -) endo] indexed by the type of displacements ['s]. *)
 type ('s, 'v) free =
   | Level of ('s, ('s, 'v) free) endo
   | Var of 'v
@@ -11,7 +11,7 @@ type ('s, 'v) free =
 (** Stupid constructors for {!type:endo}. *)
 module Endo :
 sig
-  (** A family of polynomial endofunctors [('s, -) t] indexed by the class of shifting operators ['s]. *)
+  (** A family of polynomial endofunctors [('s, -) t] indexed by the type of displacements ['s]. *)
   type ('s, 'a) t = ('s, 'a) endo =
     | Shifted of 'a * 's
     | Top
@@ -32,7 +32,7 @@ end
 (** Stupid constructors for {!type:free}. *)
 module Free :
 sig
-  (** The free monad [('s, -) t] on the endofunctor [('s, -) endo] indexed by the class of shifting operators ['s]. *)
+  (** The free monad [('s, -) t] on the endofunctor [('s, -) endo] indexed by the type of displacements ['s]. *)
   type ('s, 'v) t = ('s, 'v) free =
     | Level of ('s, ('s, 'v) free) endo
     | Var of 'v

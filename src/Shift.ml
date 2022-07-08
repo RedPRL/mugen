@@ -28,13 +28,6 @@ struct
   let dump = Format.pp_print_int
 end
 
-module type PartiallyOrderedTypeWithRightAction =
-sig
-  include PartiallyOrderedType
-  type act
-  val act : t -> act -> t
-end
-
 module Constant (Act : S) (Const : PartiallyOrderedTypeWithRightAction with type act := Act.t) :
 sig
   include S
@@ -81,57 +74,6 @@ struct
       Format.fprintf fmt "@[<1>(act@ @[%a@])@]" Act.dump x
 end
 
-module Fractal (Base : S) :
-sig
-  include S
-  val embed : Base.t -> t
-  val push : Base.t -> t -> t
-end
-=
-struct
-  type t = Base.t * Base.t list
-
-  let embed s : t = s, []
-  let push s1 (s2, s2s) = s1, (s2 :: s2s)
-
-  let id = embed Base.id
-
-  let is_id = function s, [] -> Base.is_id s | _ -> false
-
-  let equal (i1, is1) (i2, is2) =
-    List.equal Base.equal (i1 :: is1) (i2 :: is2)
-
-  let rec lt xs ys =
-    match xs, ys with
-    | [], [] -> false
-    | [], _ -> true
-    | _::_, [] -> false
-    | x::xs, y::ys -> Base.lt x y || (Base.equal x y && lt xs ys)
-
-  let lt (i1, is1) (i2, is2) = lt (i1 :: is1) (i2 :: is2)
-
-  let rec leq xs ys =
-    match xs, ys with
-    | [], _ -> true
-    | _::_, [] -> false
-    | x::xs, y::ys -> Base.lt x y || (Base.equal x y && leq xs ys)
-
-  let leq (i1, is1) (i2, is2) = leq (i1 :: is1) (i2 :: is2)
-
-  let rec compose s1 s2 =
-    match s1, s2 with
-    | (s1, []), (s2, s2s) -> Base.compose s1 s2, s2s
-    | (s1, (s11 :: s1s)), _ -> push s1 (compose (s11, s1s) s2)
-
-  let dump fmt (s, ss) =
-    if ss = [] then
-      Base.dump fmt s
-    else
-      Format.fprintf fmt "@[<1>(%a)@]"
-        (Format.pp_print_list ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ")@,.(") Base.dump)
-        (s :: ss)
-end
-
 module BinaryProduct (X : S) (Y : S) :
 sig
   include S
@@ -160,6 +102,41 @@ struct
   let lt (x1, y1) (x2, y2) = (X.lt x1 x2 && Y.leq y1 y2) || (X.equal x1 x2 && Y.lt y1 y2)
 
   let leq (x1, y1) (x2, y2) = X.leq x1 x2 && Y.leq y1 y2
+
+  let compose (x1, y1) (x2, y2) = X.compose x1 x2, Y.compose y1 y2
+
+  let dump fmt (x, y) =
+    Format.fprintf fmt "@[<1>(pair@ @[%a@]@ @[%a@])@]" X.dump x Y.dump y
+end
+
+module LexicalBinaryProduct (X : S) (Y : S) :
+sig
+  include S
+  val pair : X.t -> Y.t -> t
+  val fst : t -> X.t
+  val snd : t -> Y.t
+  val inl : X.t -> t
+  val inr : Y.t -> t
+end
+=
+struct
+  type t = X.t * Y.t
+
+  let pair x y : t = x, y
+  let fst (xy : t) = fst xy
+  let snd (xy : t) = snd xy
+  let inl x = x, Y.id
+  let inr y = X.id, y
+
+  let id = X.id, Y.id
+
+  let is_id (x, y) = X.is_id x && Y.is_id y
+
+  let equal (x1, y1) (x2, y2) = X.equal x1 x2 && Y.equal y1 y2
+
+  let lt (x1, y1) (x2, y2) = X.lt x1 x2 || (X.equal x1 x2 && Y.lt y1 y2)
+
+  let leq (x1, y1) (x2, y2) = X.lt x1 x2 || (X.equal x1 x2 && Y.leq y1 y2)
 
   let compose (x1, y1) (x2, y2) = X.compose x1 x2, Y.compose y1 y2
 
@@ -227,51 +204,19 @@ struct
       x
 end
 
-module LexicalBinaryProduct (X : S) (Y : S) :
-sig
-  include S
-  val pair : X.t -> Y.t -> t
-  val fst : t -> X.t
-  val snd : t -> Y.t
-  val inl : X.t -> t
-  val inr : Y.t -> t
-end
-=
-struct
-  type t = X.t * Y.t
-
-  let pair x y : t = x, y
-  let fst (xy : t) = fst xy
-  let snd (xy : t) = snd xy
-  let inl x = x, Y.id
-  let inr y = X.id, y
-
-  let id = X.id, Y.id
-
-  let is_id (x, y) = X.is_id x && Y.is_id y
-
-  let equal (x1, y1) (x2, y2) = X.equal x1 x2 && Y.equal y1 y2
-
-  let lt (x1, y1) (x2, y2) = X.lt x1 x2 || (X.equal x1 x2 && Y.lt y1 y2)
-
-  let leq (x1, y1) (x2, y2) = X.lt x1 x2 || (X.equal x1 x2 && Y.leq y1 y2)
-
-  let compose (x1, y1) (x2, y2) = X.compose x1 x2, Y.compose y1 y2
-
-  let dump fmt (x, y) =
-    Format.fprintf fmt "@[<1>(pair@ @[%a@]@ @[%a@])@]" X.dump x Y.dump y
-end
-
 module Prefix (Base : EqualityType) :
 sig
   include S
   val prepend : Base.t -> t -> t
+  val to_list : t -> Base.t list
 end
 =
 struct
   type t = Base.t list
 
   let prepend x xs = x :: xs
+
+  let to_list xs = xs
 
   let id = []
 
@@ -300,7 +245,58 @@ struct
       x
 end
 
-module Inverted (Base : S) : S
+module Fractal (Base : S) :
+sig
+  include S
+  val embed : Base.t -> t
+  val push : Base.t -> t -> t
+end
+=
+struct
+  type t = Base.t * Base.t list
+
+  let embed s : t = s, []
+  let push s1 (s2, s2s) = s1, (s2 :: s2s)
+
+  let id = embed Base.id
+
+  let is_id = function s, [] -> Base.is_id s | _ -> false
+
+  let equal (i1, is1) (i2, is2) =
+    List.equal Base.equal (i1 :: is1) (i2 :: is2)
+
+  let rec lt xs ys =
+    match xs, ys with
+    | [], [] -> false
+    | [], _ -> true
+    | _::_, [] -> false
+    | x::xs, y::ys -> Base.lt x y || (Base.equal x y && lt xs ys)
+
+  let lt (i1, is1) (i2, is2) = lt (i1 :: is1) (i2 :: is2)
+
+  let rec leq xs ys =
+    match xs, ys with
+    | [], _ -> true
+    | _::_, [] -> false
+    | x::xs, y::ys -> Base.lt x y || (Base.equal x y && leq xs ys)
+
+  let leq (i1, is1) (i2, is2) = leq (i1 :: is1) (i2 :: is2)
+
+  let rec compose s1 s2 =
+    match s1, s2 with
+    | (s1, []), (s2, s2s) -> Base.compose s1 s2, s2s
+    | (s1, (s11 :: s1s)), _ -> push s1 (compose (s11, s1s) s2)
+
+  let dump fmt (s, ss) =
+    if ss = [] then
+      Base.dump fmt s
+    else
+      Format.fprintf fmt "@[<1>(%a)@]"
+        (Format.pp_print_list ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ")@,.(") Base.dump)
+        (s :: ss)
+end
+
+module Opposite (Base : S) : S with type t = Base.t
 =
 struct
   type t = Base.t

@@ -5,7 +5,7 @@ sig
   (** Parameters of smart constructors. *)
   module type Param =
   sig
-    (** The class of shifting operators. It is assumed that [Shift.compose] is associative. *)
+    (** The displacement algebra. *)
     module Shift : Shift.S
 
     (** The type that embeds levels. *)
@@ -21,24 +21,24 @@ sig
   (** The signature of smart constructors. *)
   module type S =
   sig
-    (** The type of shifting operators. *)
+    (** The displacement algebra. *)
     type shift
 
     (** The type that embeds levels. *)
     type level
 
-    (** Smarter version of {!val:Syntax.Endo.shifted} that collapses multiple shifting. *)
+    (** Smarter version of {!val:Syntax.Endo.shifted} that collapses multiple displacements. *)
     val shifted : level -> shift -> level
 
     (** [top] is {!val:Syntax.Endo.top} *)
     val top : level
 
-    (** [simplify l] collapses multiple shifting operators and removes useless ones.
-        (For example, shifted [top] is still [top].) *)
+    (** [simplify l] collapses multiple displacements and removes useless ones.
+        (For example, shifted [top] is just [top].) *)
     val simplify : level -> level
 
-    (** [dissect l] is a helper function that separate the shifting operators from a level (if any).
-        If the level is shifted multiple times, the shifting operators are composed into one. *)
+    (** [dissect l] is a helper function that extract displacements from a level (if any).
+        If the level is displaced multiple times, all the displacements are composed into one. *)
     val dissect : level -> level * shift option
   end
 
@@ -53,7 +53,7 @@ sig
   (** Parameters of smart constructors. *)
   module type Param =
   sig
-    (** The class of shifting operators. *)
+    (** The displacement algebra. *)
     module Shift : Shift.S
 
     (** The type of level variables. *)
@@ -63,7 +63,7 @@ sig
   (** The signature of smart constructors. *)
   module type S =
   sig
-    (** The type of shifting operators. *)
+    (** The displacement algebra. *)
     type shift
 
     (** The type of level variables. *)
@@ -74,6 +74,7 @@ sig
 
     (** [var] is {!val:Syntax.Free.var} *)
     val var : var -> level
+
     include Endo.S with type shift := shift and type level := level
   end
 

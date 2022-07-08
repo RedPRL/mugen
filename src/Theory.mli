@@ -1,7 +1,7 @@
 (** Parameters of universe level comparators. *)
 module type Param =
 sig
-  (** The class of shifting operators. It is assumed that [Shift.compose] is associative. *)
+  (** The displacement algebra. *)
   module Shift : Shift.S
 
   (** The type of level variables. *)
@@ -14,7 +14,7 @@ end
 (** The signature of universe level comparators. *)
 module type S =
 sig
-  (** The type of shifting operators. *)
+  (** The displacement algebra. *)
   type shift
 
   (** The type of level variables. *)
