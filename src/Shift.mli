@@ -3,7 +3,7 @@ open StructuredType
 (** A displacement algebra. *)
 module type S =
 sig
-  (** To form a valid displacement algebra, {!val:compose}, {!val:id} and {!val:leq} (the non-strict order) should form an ordered monoid, and {!val:lt} (the strict order) must be left-invariant respect to {!val:compose}. Note: we additionally require the algebra to be an ordered monoid for usability. *)
+  (** To form a valid displacement algebra, {!val:compose} and {!val:id} should form a monoid, and {!val:lt} (the strict order) must be left-invariant respect to {!val:compose}. *)
 
   (** @open *)
   include PartiallyOrderedType
