@@ -1,26 +1,5 @@
-module type Param =
-sig
-  module Shift : Shift.S
-  type var
-  val equal_var : var -> var -> bool
-end
-
-module type S =
-sig
-  type shift
-  type var
-  type level = (shift, var) Syntax.free
-  val equal : level -> level -> bool
-  val lt : level -> level -> bool
-  val leq : level -> level -> bool
-  val gt : level -> level -> bool
-  val geq : level -> level -> bool
-  val (=) : level -> level -> bool
-  val (<) : level -> level -> bool
-  val (<=) : level -> level -> bool
-  val (>) : level -> level -> bool
-  val (>=) : level -> level -> bool
-end
+module type Param = TheorySigs.Param
+module type S = TheorySigs.S
 
 module Make (P : Param) : S with type shift := P.Shift.t and type var := P.var =
 struct
@@ -52,9 +31,12 @@ struct
   let gt x y = lt y x
   let geq x y = leq y x
 
-  let (=) = equal
-  let (<) = lt
-  let (<=) = leq
-  let (>) = gt
-  let (>=) = geq
+  module Infix =
+  struct
+    let (=) = equal
+    let (<) = lt
+    let (<=) = leq
+    let (>) = gt
+    let (>=) = geq
+  end
 end
