@@ -29,7 +29,7 @@ struct
       if Shift.is_id s then l
       else
         match unlevel l with
-        | Some Top -> top
+        | Some Top -> invalid_arg "cannot shift the top level"
         | Some (Shifted (l, s')) ->
           let s = Shift.compose s' s in
           level @@ Shifted (l, s)
@@ -39,12 +39,17 @@ struct
     let reduce_shifts =
       function
       | [] -> None
-      | s::ss -> Some (List.fold_left Shift.compose s ss)
+      | s::ss ->
+        let s = List.fold_left Shift.compose s ss in
+        if Shift.is_id s then None else Some s
 
     let dissect l =
       let rec go l acc =
         match unlevel l with
-        | Some Top -> level Top, None
+        | Some Top ->
+          if reduce_shifts acc = None
+          then level Top, None
+          else invalid_arg "cannot shift the top level"
         | Some (Shifted (l, s)) -> go l (s :: acc)
         | None -> l, reduce_shifts acc
       in
@@ -54,7 +59,6 @@ struct
       let l, ss = dissect l in
       match ss with
       | None -> l
-      | Some s when Shift.is_id s -> l
       | Some s -> level @@ Shifted (l, s)
   end
 end

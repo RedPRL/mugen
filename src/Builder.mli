@@ -27,18 +27,24 @@ sig
     (** The type that embeds levels. *)
     type level
 
-    (** Smarter version of {!val:Syntax.Endo.shifted} that collapses multiple displacements. *)
+    (** Smarter version of {!val:Syntax.Endo.shifted} that collapses multiple displacements
+
+        @raise Invalid_argument When it attempts to shift the top level. *)
     val shifted : level -> shift -> level
 
     (** [top] is {!val:Syntax.Endo.top} *)
     val top : level
 
     (** [simplify l] collapses multiple displacements and removes useless ones.
-        (For example, shifted [top] is just [top].) *)
+        (For example, shifted [top] is just [top].)
+
+        @raise Invalid_argument When it attempts to shift the top level. *)
     val simplify : level -> level
 
     (** [dissect l] is a helper function that extract displacements from a level (if any).
-        If the level is displaced multiple times, all the displacements are composed into one. *)
+        If the level is displaced multiple times, all the displacements are composed into one.
+
+        @raise Invalid_argument When it attempts to shift the top level. *)
     val dissect : level -> level * shift option
   end
 
