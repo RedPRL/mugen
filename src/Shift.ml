@@ -28,6 +28,40 @@ struct
   let dump = Format.pp_print_int
 end
 
+module Nat =
+struct
+  type t = int
+  let of_int x = if x < 0 then invalid_arg "Nat.of_int"; x
+  let id = 0
+  let to_int x = x
+  let equal = Stdlib.Int.equal
+  let is_id x = x = 0
+  let lt : t -> t -> bool = (<)
+  let leq : t -> t -> bool = (<=)
+  let compose : t -> t -> t = (+)
+  let dump = Format.pp_print_int
+end
+
+module NonPos :
+sig
+  include S
+  val of_int : int -> t
+  val to_int : t -> int
+end
+=
+struct
+  type t = int
+  let of_int x = if x > 0 then invalid_arg "NonPos.of_int"; x
+  let id = 0
+  let to_int x = x
+  let equal = Stdlib.Int.equal
+  let is_id x = x = 0
+  let lt : t -> t -> bool = (<)
+  let leq : t -> t -> bool = (<=)
+  let compose : t -> t -> t = (+)
+  let dump = Format.pp_print_int
+end
+
 module Constant (Act : S) (Const : PartiallyOrderedTypeWithRightAction with type act := Act.t) :
 sig
   include S

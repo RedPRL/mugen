@@ -10,26 +10,23 @@ sig
   val bot : t
 end
 
-module Nat =
-struct
-  type t = int
-  let of_int x = if x < 0 then invalid_arg "MultiShift.Nat.of_int"; x
-  let bot = 0
-  let id = 0
-  let to_int x = x
-  let equal = Stdlib.Int.equal
-  let is_id x = x = 0
-  let lt : t -> t -> bool = (<)
-  let leq : t -> t -> bool = (<=)
-  let compose : t -> t -> t = (+)
-  let join : t -> t -> t = Stdlib.Int.max
-  let dump = Format.pp_print_int
-end
-
 module Int =
 struct
   include Shift.Int
   let join x y = of_int (Int.max (to_int x) (to_int y))
+end
+
+module Nat =
+struct
+  include Shift.Nat
+  let bot = of_int 0
+  let join x y = of_int (Stdlib.Int.max (to_int x) (to_int y))
+end
+
+module NonPos =
+struct
+  include Shift.NonPos
+  let join x y = of_int (Stdlib.Int.max (to_int x) (to_int y))
 end
 
 module BinaryProduct (X : Semilattice) (Y : Semilattice) =
