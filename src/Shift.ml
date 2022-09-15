@@ -42,7 +42,7 @@ struct
   let dump = Format.pp_print_int
 end
 
-module NonPos :
+module NonPositive :
 sig
   include S
   val of_int : int -> t
@@ -51,7 +51,7 @@ end
 =
 struct
   type t = int
-  let of_int x = if x > 0 then invalid_arg "NonPos.of_int"; x
+  let of_int x = if x > 0 then invalid_arg "NonPositive.of_int"; x
   let id = 0
   let to_int x = x
   let equal = Stdlib.Int.equal
@@ -178,7 +178,7 @@ struct
     Format.fprintf fmt "@[<1>(pair@ @[%a@]@ @[%a@])@]" X.dump x Y.dump y
 end
 
-module InfiniteProduct (Base : S) :
+module FiniteSupport (Base : S) :
 sig
   include S
   val of_list : Base.t list -> t
@@ -186,7 +186,7 @@ sig
 end
 =
 struct
-  (* invariants: no ending id *)
+  (* invariants: no trailing ids *)
   type t = Base.t list
 
   let rec strip_ids : Base.t list -> t =

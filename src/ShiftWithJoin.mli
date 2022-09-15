@@ -1,4 +1,4 @@
-(** A displacement ordered monoid with joins. *)
+(** A displacement algebra with joins. *)
 module type Semilattice =
 sig
   (** @closed *)
@@ -8,7 +8,7 @@ sig
   val join : t -> t -> t
 end
 
-(** A displacement ordered monoid with joins and a bottom element. *)
+(** A displacement algebra with joins and a bottom element. *)
 module type BoundedSemilattice =
 sig
   (** @closed *)
@@ -18,7 +18,7 @@ sig
   val bot : t
 end
 
-(** The displacement algebra of integers. *)
+(** Integers with addition. Caveats: it does not handle integer overflow. *)
 module Int :
 sig
   (** @closed *)
@@ -31,7 +31,7 @@ sig
   val to_int : t -> int
 end
 
-(** The displacement algebra of natural numbers. *)
+(** Natural numbers with addition. Caveats: it does not handle integer overflow. *)
 module Nat :
 sig
   (** @closed *)
@@ -44,8 +44,8 @@ sig
   val to_int : t -> int
 end
 
-(** The displacement algebra of non-positive integers. *)
-module NonPos :
+(** Non-positive integers with addition. Caveats: it does not handle integer overflow. *)
+module NonPositive :
 sig
   (** @closed *)
   include Semilattice
@@ -57,7 +57,7 @@ sig
   val to_int : t -> int
 end
 
-(** The binary product of two displacement semilattices. *)
+(** Binary products. *)
 module BinaryProduct (X : Semilattice) (Y : Semilattice) :
 sig
   (** @closed *)
@@ -79,7 +79,7 @@ sig
   val inr : Y.t -> t
 end
 
-(** The binary product of two bounded displacement semilattices, but with the lexicographical order. *)
+(** Binary products, but with the lexicographical order. *)
 module LexicalBinaryProduct (X : BoundedSemilattice) (Y : BoundedSemilattice) :
 sig
   (** @closed *)
@@ -101,8 +101,8 @@ sig
   val inr : Y.t -> t
 end
 
-(** The infinite product of a displacement semilattice. *)
-module InfiniteProduct (Base : Semilattice) :
+(** Infinite products with finite supports. *)
+module FiniteSupport (Base : Semilattice) :
 sig
   (** @closed *)
   include Semilattice

@@ -45,7 +45,7 @@ sig
 end
 
 (** Non-positive integers with addition. Caveats: it does not handle integer overflow. *)
-module NonPos :
+module NonPositive :
 sig
   (** @closed *)
   include S
@@ -57,7 +57,7 @@ sig
   val to_int : t -> int
 end
 
-(** Augmentation with constants. *)
+(** Constant displacements. *)
 module Constant (Act : S) (Const : PartiallyOrderedTypeWithRightAction with type act := Act.t) :
 sig
   (** @closed *)
@@ -117,16 +117,26 @@ sig
   val inr : Y.t -> t
 end
 
-(** The infinite product of a displacement algebra. *)
-module InfiniteProduct (Base : S) :
+(** Infinite products with finite supports. *)
+module FiniteSupport (Base : S) :
 sig
   (** @closed *)
   include S
 
-  (** Conversion from a list *)
+  (** Conversion from a list; a list [l] represents the following infinite product (as a function from natural numbers to [Base.t])
+      {v
+f 0 = List.nth l 0
+f 1 = List.nth l 1
+...
+f (n-1) = List.nth l (n-1)
+f n = Base.id
+f (n+1) = Base.id
+...
+      v}
+  *)
   val of_list : Base.t list -> t
 
-  (** Conversion to a list *)
+  (** List representation of an infinite product. Right inverse of {!val:of_list}. It is not a left inverse of {!val:of_list} because trailing [Base.id] will be stripped. *)
   val to_list : t -> Base.t list
 end
 
