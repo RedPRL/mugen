@@ -31,6 +31,32 @@ sig
   val to_int : t -> int
 end
 
+(** Natural numbers with addition. Caveats: it does not handle integer overflow. *)
+module Nat :
+sig
+  (** @closed *)
+  include S
+
+  (** Conversion from [int] *)
+  val of_int : int -> t
+
+  (** Conversion to [int] *)
+  val to_int : t -> int
+end
+
+(** Non-positive integers with addition. Caveats: it does not handle integer overflow. *)
+module NonPos :
+sig
+  (** @closed *)
+  include S
+
+  (** Conversion from [int] *)
+  val of_int : int -> t
+
+  (** Conversion to [int] *)
+  val to_int : t -> int
+end
+
 (** Augmentation with constants. *)
 module Constant (Act : S) (Const : PartiallyOrderedTypeWithRightAction with type act := Act.t) :
 sig

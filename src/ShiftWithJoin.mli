@@ -44,6 +44,19 @@ sig
   val to_int : t -> int
 end
 
+(** The displacement algebra of non-positive integers. *)
+module NonPos :
+sig
+  (** @closed *)
+  include Semilattice
+
+  (** Conversion from [int] *)
+  val of_int : int -> t
+
+  (** Conversion to [int] *)
+  val to_int : t -> int
+end
+
 (** The binary product of two displacement semilattices. *)
 module BinaryProduct (X : Semilattice) (Y : Semilattice) :
 sig
