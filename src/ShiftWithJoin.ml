@@ -23,9 +23,9 @@ struct
   let join x y = of_int (Stdlib.Int.max (to_int x) (to_int y))
 end
 
-module NonPos =
+module NonPositive =
 struct
-  include Shift.NonPos
+  include Shift.NonPositive
   let join x y = of_int (Stdlib.Int.max (to_int x) (to_int y))
 end
 
@@ -50,7 +50,7 @@ struct
     pair x (Y.join y1 y2)
 end
 
-module InfiniteProduct (Base : Semilattice) :
+module FiniteSupport (Base : Semilattice) :
 sig
   include Semilattice
   val of_list : Base.t list -> t
@@ -58,7 +58,7 @@ sig
 end
 =
 struct
-  include Shift.InfiniteProduct (Base)
+  include Shift.FiniteSupport (Base)
 
   (* [of_list] in [join] will do the normalization *)
   let rec join_list l1 l2 =
