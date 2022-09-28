@@ -117,6 +117,16 @@ sig
   val inr : Y.t -> t
 end
 
+module NearlyConstant (Base : S) :
+sig
+  (** @closed *)
+  include S
+
+  val of_based_list : Base.t * Base.t list -> t
+
+  val to_based_list : t -> Base.t * Base.t list
+end
+
 (** Infinite products with finite supports. *)
 module FiniteSupport (Base : S) :
 sig

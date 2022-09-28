@@ -101,6 +101,13 @@ sig
   val inr : Y.t -> t
 end
 
+module NearlyConstant (Base : BoundedSemilattice) :
+sig
+  include BoundedSemilattice
+  val of_based_list : Base.t * Base.t list -> t
+  val to_based_list : t -> Base.t * Base.t list
+end
+
 (** Infinite products with finite supports. *)
 module FiniteSupport (Base : Semilattice) :
 sig
