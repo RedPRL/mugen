@@ -117,7 +117,7 @@ sig
   val inr : Y.t -> t
 end
 
-(** Infinite products with finite elements different from a displacement. *)
+(** Infinite products with finite elements different from a fixed displacement. *)
 module NearlyConstant (Base : S) :
 sig
   (** @closed *)
