@@ -101,7 +101,19 @@ sig
   val inr : Y.t -> t
 end
 
-(** Infinite products with finite supports. *)
+(** Infinite products with finite elements different from a fixed displacement. *)
+module NearlyConstant (Base : BoundedSemilattice) :
+sig
+  include BoundedSemilattice
+
+  (** Conversion from a based list *)
+  val of_based_list : Base.t * Base.t list -> t
+
+  (** Conversion to a based list *)
+  val to_based_list : t -> Base.t * Base.t list
+end
+
+(** Infinite products with finite supports. A special case of {!module:NearlyConstant}. *)
 module FiniteSupport (Base : Semilattice) :
 sig
   (** @closed *)

@@ -50,6 +50,33 @@ struct
     pair x (Y.join y1 y2)
 end
 
+module NearlyConstant (Base : BoundedSemilattice) :
+sig
+  include BoundedSemilattice
+  val of_based_list : Base.t * Base.t list -> t
+  val to_based_list : t -> Base.t * Base.t list
+end
+=
+struct
+  include Shift.NearlyConstant (Base)
+
+  (* [of_list] in [join] will do the normalization *)
+  let rec join_based_list_ (b1, l1) (b2, l2) =
+    match l1, l2 with
+    | [], [] -> []
+    | l1, [] -> List.map (fun x1 -> Base.join x1 b2) l1
+    | [], l2 -> List.map (fun x2 -> Base.join b1 x2) l2
+    | x1::l1, x2::l2 -> Base.join x1 x2 :: join_based_list_ (b1, l1) (b2, l2)
+
+  let join bl1 bl2 =
+    let b1, l1 = to_based_list bl1
+    and b2, l2 = to_based_list bl2
+    in
+    of_based_list (Base.join b1 b2, join_based_list_ (b1, l1) (b2, l2))
+
+  let bot = of_based_list (Base.bot, [])
+end
+
 module FiniteSupport (Base : Semilattice) :
 sig
   include Semilattice

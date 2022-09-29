@@ -117,7 +117,30 @@ sig
   val inr : Y.t -> t
 end
 
-(** Infinite products with finite supports. *)
+(** Infinite products with finite elements different from a fixed displacement. *)
+module NearlyConstant (Base : S) :
+sig
+  (** @closed *)
+  include S
+
+  (** Conversion from a based list; a based list [(b, l)] represents the following infinite product (as a function from natural numbers to [Base.t])
+      {v
+f 0 = List.nth l 0
+f 1 = List.nth l 1
+...
+f (n-1) = List.nth l (n-1)
+f n = b
+f (n+1) = b
+...
+      v}
+  *)
+  val of_based_list : Base.t * Base.t list -> t
+
+  (** Right inverse of {!val:of_based_list}. It is not a left inverse of {!val:of_based_list} because trailing values that are equal to the base will be stripped. *)
+  val to_based_list : t -> Base.t * Base.t list
+end
+
+(** Infinite products with finite supports. A special case of {!module:NearlyConstant} where the base is [id]. *)
 module FiniteSupport (Base : S) :
 sig
   (** @closed *)

@@ -178,6 +178,69 @@ struct
     Format.fprintf fmt "@[<1>(pair@ @[%a@]@ @[%a@])@]" X.dump x Y.dump y
 end
 
+module NearlyConstant (Base : S) :
+sig
+  include S
+  val of_based_list : Base.t * Base.t list -> t
+  val to_based_list : t -> Base.t * Base.t list
+end
+=
+struct
+  (* invariants: no trailing elements equal to base *)
+  type t = Base.t * Base.t list
+
+  let rec strip_right base : Base.t list -> Base.t list =
+    function
+    | [] -> []
+    | [s] -> if Base.equal s base then [] else [s]
+    | s::ss ->
+      let ss = strip_right base ss in
+      if ss = [] && Base.equal s base then [] else s::ss
+
+  let of_based_list (b, l) : t = b, strip_right b l
+  let to_based_list (l : t) = l
+
+  let id : t = Base.id, []
+
+  let is_id ((b, l) : t) = Base.is_id b && l = []
+
+  let rec for_all2 f (b1, l1) (b2, l2) =
+    match l1, l2 with
+    | [], [] -> f b1 b2
+    | l1, [] -> List.for_all (fun x1 -> f x1 b2) l1
+    | [], l2 -> List.for_all (fun x2 -> f b1 x2) l2
+    | x1::l1, x2::l2 -> f x1 x2 && for_all2 f (b1, l1) (b2, l2)
+
+  let rec exists2 f (b1, l1) (b2, l2) =
+    match l1, l2 with
+    | [], [] -> f b1 b2
+    | l1, [] -> List.exists (fun x1 -> f x1 b2) l1
+    | [], l2 -> List.exists (fun x2 -> f b1 x2) l2
+    | x1::l1, x2::l2 -> f x1 x2 || exists2 f (b1, l1) (b2, l2)
+
+  let equal l1 l2 = for_all2 Base.equal l1 l2
+
+  let lt l1 l2 = for_all2 Base.leq l1 l2 && exists2 Base.lt l1 l2
+
+  let leq l1 l2 = for_all2 Base.leq l1 l2
+
+  let rec compose_ (b1, l1) (b2, l2) =
+    match l1, l2 with
+    | [], [] -> []
+    | l1, [] -> List.map (fun x1 -> Base.compose x1 b2) l1
+    | [], l2 -> List.map (fun x2 -> Base.compose b1 x2) l2
+    | x1::l1, x2::l2 -> Base.compose x1 x2 :: compose_ (b1, l1) (b2, l2)
+
+  let compose (b1, l1) (b2, l2) =
+    let b = Base.compose b1 b2 in
+    b, strip_right b @@ compose_ (b1, l1) (b2, l2)
+
+  let dump fmt (b, l) =
+    Format.fprintf fmt "@[<1>[%a;@,%a...]@]"
+      (Format.pp_print_list ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ";@,") Base.dump) l
+      Base.dump b
+end
+
 module FiniteSupport (Base : S) :
 sig
   include S
@@ -186,56 +249,13 @@ sig
 end
 =
 struct
-  (* invariants: no trailing ids *)
-  type t = Base.t list
+  include NearlyConstant (Base)
 
-  let rec strip_ids : Base.t list -> t =
-    function
-    | [] -> []
-    | [s] -> if Base.is_id s then [] else [s]
-    | s::ss ->
-      let ss = strip_ids ss in
-      if ss = [] && Base.is_id s then [] else s::ss
-
-  let of_list l : t = strip_ids l
-  let to_list (l : t) = l
-
-  let id : t = []
-
-  let is_id (s : t) = s = []
-
-  let rec for_all2 f l1 l2 =
-    match l1, l2 with
-    | [], [] -> true
-    | l1, [] -> List.for_all (fun x1 -> f x1 Base.id) l1
-    | [], l2 -> List.for_all (fun x2 -> f Base.id x2) l2
-    | x::xs, y::ys -> f x y && for_all2 f xs ys
-
-  let rec exists2 f l1 l2 =
-    match l1, l2 with
-    | [], [] -> false
-    | l1, [] -> List.exists (fun x1 -> f x1 Base.id) l1
-    | [], l2 -> List.exists (fun x2 -> f Base.id x2) l2
-    | x::xs, y::ys -> f x y || exists2 f xs ys
-
-  let equal l1 l2 = for_all2 Base.equal l1 l2
-
-  let lt l1 l2 = for_all2 Base.leq l1 l2 && exists2 Base.lt l1 l2
-
-  let leq l1 l2 = for_all2 Base.leq l1 l2
-
-  let rec compose_ l1 l2 =
-    match l1, l2 with
-    | [], [] -> []
-    | l, [] | [], l -> l
-    | x::xs, y::ys -> Base.compose x y :: compose_ xs ys
-
-  let compose l1 l2 = strip_ids @@ compose_ l1 l2
-
-  let dump fmt x =
-    Format.fprintf fmt "@[<1>[%a]@]"
-      (Format.pp_print_list ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ";@,") Base.dump)
-      x
+  let of_list l = of_based_list (Base.id, l)
+  let to_list bl =
+    let b, l = to_based_list bl in
+    assert (Base.is_id b);
+    l
 end
 
 module Prefix (Base : EqualityType) :
