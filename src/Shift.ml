@@ -350,7 +350,12 @@ struct
         (s :: ss)
 end
 
-module Opposite (Base : S) : S with type t = Base.t
+module Opposite (Base : S) :
+sig
+  include S
+  val of_base : Base.t -> t
+  val to_base : t -> Base.t
+end
 =
 struct
   type t = Base.t
@@ -368,4 +373,8 @@ struct
   let compose = Base.compose
 
   let dump = Base.dump
+
+  let of_base (b : t) = b
+
+  let to_base (b : t) = b
 end
