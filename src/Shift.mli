@@ -190,4 +190,13 @@ sig
 end
 
 (** Opposite displacements *)
-module Opposite (Base : S) : S with type t = Base.t
+module Opposite (Base : S) :
+sig
+  include S
+
+  (** [of_base b] gives the same level [b] in the opposite algebra. *)
+  val of_base : Base.t -> t
+
+  (** [to_base b] gives the same level [b] in the original algebra. *)
+  val to_base : t -> Base.t
+end
