@@ -11,7 +11,4 @@ module ShiftWithJoin : module type of ShiftWithJoin
 module Syntax : module type of Syntax
 
 (** Smart builders for universe levels with displacements *)
-module Builder : module type of Builder
-
-(** Comparators for universe levels with displacements *)
 module Theory : module type of Theory

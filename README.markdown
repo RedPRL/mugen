@@ -8,11 +8,10 @@ A vast generalization of [Conor McBride’s crude but effective stratification](
 
 ## Components
 
-- [Mugen.Shift](https://redprl.org/mugen/mugen/Mugen/Shift): examples of displacement algebras
-- [Mugen.ShiftWithJoin](https://redprl.org/mugen/mugen/Mugen/ShiftWithJoin): more examples of displacement algebras with joins
+- [Mugen.Shift](https://redprl.org/mugen/mugen/Mugen/Shift): example displacement algebras
+- [Mugen.ShiftWithJoin](https://redprl.org/mugen/mugen/Mugen/ShiftWithJoin): example displacement algebras with joins
 - [Mugen.Syntax](https://redprl.org/mugen/mugen/Mugen/Syntax): syntax of universe levels
-- [Mugen.Builder](https://redprl.org/mugen/mugen/Mugen/Builder): smart builders of universe levels
-- [Mugen.Theory](https://redprl.org/mugen/mugen/Mugen/Theory): comparators for universe levels
+- [Mugen.Theory](https://redprl.org/mugen/mugen/Mugen/Theory): smart builders and comparators
 
 ## Philosophy and Beliefs in this Experiment
 
