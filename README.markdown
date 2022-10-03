@@ -1,4 +1,4 @@
-# ♾️ Mugen 無限: Universe Levels
+# ♾️ mugen 無限: Universe Levels
 
 A vast generalization of [Conor McBride’s crude but effective stratification](https://personal.cis.strath.ac.uk/conor.mcbride/Crude.pdf). We replace natural numbers with what we call _displacement algebras_, the minimum algebraic structure to use McBride’s scheme.
 
