@@ -16,7 +16,7 @@ sig
     | Shifted of 'a * 's
     | Top
 
-  (** [shifted s l] is [Shifted (l, s)]. *)
+  (** [shifted l s] is [Shifted (l, s)]. *)
   val shifted : 'a -> 's -> ('s, 'a) t
 
   (** [top] is [Top]. *)
@@ -37,7 +37,7 @@ sig
     | Level of ('s, ('s, 'v) free) endo
     | Var of 'v
 
-  (** [shifted s l] is [Level (Shifted (l, s))]. *)
+  (** [shifted l s] is [Level (Shifted (l, s))]. *)
   val shifted : ('s, 'v) t -> 's -> ('s, 'v) t
 
   (** [top] is [Level Top]. *)

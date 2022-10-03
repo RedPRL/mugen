@@ -1,3 +1,4 @@
+(** A family of polynomial endofunctors [('s, -) endo] indexed by the type of displacements ['s]. *)
 type ('s, 'a) endo =
   | Shifted of 'a * 's
   | Top
@@ -12,7 +13,7 @@ struct
     | Shifted of 'a * 's
     | Top
 
-  let shifted b s = Shifted (b, s)
+  let shifted l s = Shifted (l, s)
   let top = Top
 
   let dump dump_s dump_a fmt =
@@ -29,7 +30,7 @@ struct
     | Level of ('s, ('s, 'v) free) endo
     | Var of 'v
 
-  let shifted b s = Level (Shifted (b, s))
+  let shifted l s = Level (Shifted (l, s))
 
   let top = Level Top
 
