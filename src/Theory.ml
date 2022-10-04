@@ -10,15 +10,13 @@ struct
     let top = level Top
 
     let shifted l s =
-      if Shift.is_id s then l
-      else
-        match unlevel l with
-        | Some Top -> invalid_arg "cannot shift the top level"
-        | Some (Shifted (l, s')) ->
-          let s = Shift.compose s' s in
-          level @@ Shifted (l, s)
-        | None ->
-          level @@ Shifted (l, s)
+      match unlevel l with
+      | Some Top -> invalid_arg "cannot shift the top level"
+      | Some (Shifted (l, s')) ->
+        let s = Shift.compose s' s in
+        level @@ Shifted (l, s)
+      | None ->
+        level @@ Shifted (l, s)
   end
 end
 
@@ -41,36 +39,36 @@ struct
     include P
     include Endo.Make(P)
 
-    let dissect l =
+    let normalize l =
       let rec go l acc =
         match l with
         | Level Top ->
-          if Shift.is_id acc
-          then level Top, acc
+          if acc = []
+          then level Top
           else invalid_arg "cannot shift the top level"
-        | Level (Shifted (l, s)) -> go l (Shift.compose s acc)
-        | Var v -> Var v, acc
+        | Level (Shifted (l, s)) -> go l (s :: acc)
+        | Var v -> Level (Shifted (Var v, List.fold_left Shift.compose Shift.id acc))
       in
-      go l Shift.id
+      go l []
 
     let equal x y =
-      match dissect x, dissect y with
-      | (Level Top, _), (Level Top, _) -> true
-      | (Var vx, sx), (Var vy, sy) ->
+      match normalize x, normalize y with
+      | Level Top, Level Top -> true
+      | Level (Shifted (Var vx, sx)), Level (Shifted (Var vy, sy)) ->
         equal_var vx vy && Shift.equal sx sy
       | _ -> false
 
     let lt x y =
-      match dissect x, dissect y with
-      | (Var _, _), (Level Top, _) -> true
-      | (Var vx, sx), (Var vy, sy) ->
+      match normalize x, normalize y with
+      | Level (Shifted (Var _, _)), Level Top -> true
+      | Level (Shifted (Var vx, sx)), Level (Shifted (Var vy, sy)) ->
         equal_var vx vy && Shift.lt sx sy
       | _ -> false
 
     let leq x y =
-      match dissect x, dissect y with
-      | _, (Level Top, _) -> true
-      | (Var vx, sx), (Var vy, sy) ->
+      match normalize x, normalize y with
+      | _, Level Top -> true
+      | Level (Shifted (Var vx, sx)), Level (Shifted (Var vy, sy)) ->
         equal_var vx vy && Shift.leq sx sy
       | _ -> false
 
