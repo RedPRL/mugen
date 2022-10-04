@@ -29,16 +29,16 @@ struct
   let join x y = of_int (Stdlib.Int.max (to_int x) (to_int y))
 end
 
-module BinaryProduct (X : Semilattice) (Y : Semilattice) =
+module Product (X : Semilattice) (Y : Semilattice) =
 struct
-  include Shift.BinaryProduct (X) (Y)
+  include Shift.Product (X) (Y)
 
   let join s1 s2 = pair (X.join (fst s1) (fst s2)) (Y.join (snd s1) (snd s2))
 end
 
-module LexicalBinaryProduct (X : BoundedSemilattice) (Y : BoundedSemilattice) =
+module Lexicographic (X : BoundedSemilattice) (Y : BoundedSemilattice) =
 struct
-  include Shift.LexicalBinaryProduct (X) (Y)
+  include Shift.Lexicographic (X) (Y)
 
   let bot = pair X.bot Y.bot
 

@@ -74,7 +74,7 @@ sig
 end
 
 (** Binary products. *)
-module BinaryProduct (X : S) (Y : S) :
+module Product (X : S) (Y : S) :
 sig
   (** @closed *)
   include S
@@ -96,7 +96,7 @@ sig
 end
 
 (** Binary products, but with the lexicographical order. *)
-module LexicalBinaryProduct (X : S) (Y : S) :
+module Lexicographic (X : S) (Y : S) :
 sig
   (** @closed *)
   include S

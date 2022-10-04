@@ -108,7 +108,7 @@ struct
       Format.fprintf fmt "@[<1>(act@ @[%a@])@]" Act.dump x
 end
 
-module BinaryProduct (X : S) (Y : S) :
+module Product (X : S) (Y : S) :
 sig
   include S
   val pair : X.t -> Y.t -> t
@@ -143,7 +143,7 @@ struct
     Format.fprintf fmt "@[<1>(pair@ @[%a@]@ @[%a@])@]" X.dump x Y.dump y
 end
 
-module LexicalBinaryProduct (X : S) (Y : S) :
+module Lexicographic (X : S) (Y : S) :
 sig
   include S
   val pair : X.t -> Y.t -> t

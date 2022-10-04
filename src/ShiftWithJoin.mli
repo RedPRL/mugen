@@ -58,7 +58,7 @@ sig
 end
 
 (** Binary products. *)
-module BinaryProduct (X : Semilattice) (Y : Semilattice) :
+module Product (X : Semilattice) (Y : Semilattice) :
 sig
   (** @closed *)
   include Semilattice
@@ -80,7 +80,7 @@ sig
 end
 
 (** Binary products, but with the lexicographical order. *)
-module LexicalBinaryProduct (X : BoundedSemilattice) (Y : BoundedSemilattice) :
+module Lexicographic (X : BoundedSemilattice) (Y : BoundedSemilattice) :
 sig
   (** @closed *)
   include BoundedSemilattice
