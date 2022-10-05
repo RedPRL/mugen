@@ -27,9 +27,13 @@ In Conor McBride’s notes, it was noted that any class of strictly monotone ope
 
 ## How to Use It
 
-### OCaml >= 4.13
+### Installation
 
-You need OCaml 4.13 or later
+You need OCaml 4.13 or later. Here is the fastest way to install the library with OPAM:
+
+```sh
+opam pin mugen git+https://github.com/RedPRL/mugen
+```
 
 ### Example Code
 
