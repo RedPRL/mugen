@@ -17,7 +17,7 @@ A vast generalization of [Conor McBride’s crude but effective stratification](
 
 1. The distinguished level variable for top-level definitions should be explicit in the core language for clean semantics. (It can remain implicit in the surface language.)
 2. One-variable universe polymorphism with cumulativity is enough. Typical ambiguity (as in Coq) and multi-variable universe polymorphism (as in Agda) are overkill.
-3. It is convenient to have the top level for type checking. However, it should be impossible for the user to write the top level.
+3. It is convenient to have the top level for type checking. However, end users should not be allowed to write the top level, and shifting the top level is forbidden.
 
 ## Displacement Algebras
 
@@ -27,9 +27,13 @@ In Conor McBride’s notes, it was noted that any class of strictly monotone ope
 
 ## How to Use It
 
-### OCaml >= 4.13
+### Installation
 
-You need OCaml 4.13 or later
+You need OCaml 4.13 or later. Here is the fastest way to install the library with OPAM 2.1:
+
+```sh
+opam pin mugen git+https://github.com/RedPRL/mugen
+```
 
 ### Example Code
 
