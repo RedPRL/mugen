@@ -10,6 +10,7 @@ let to_size ctx = Bwd.length ctx
 
 let shift s = Syntax.ULvlShift.of_int s
 
+(** type checking *)
 let rec check ctx (tm : CS.t) (tp : Domain.t) =
   match tm, tp with
   | CS.Univ l1, Univ l2 ->
@@ -25,9 +26,10 @@ let rec check ctx (tm : CS.t) (tp : Domain.t) =
     NbE.subtype (to_size ctx) tp' tp;
     tm
 
+(** type inference *)
 and infer ctx =
   function
   | CS.Var i ->
     let {tm; tp} = Bwd.nth ctx i in
     NbE.quote (to_size ctx) tm, tp
-  | _ -> failwith "infer"
+  | _ -> failwith "not inferable"
