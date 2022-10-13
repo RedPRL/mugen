@@ -8,6 +8,20 @@ sig
   val compose : t -> t -> t
 end
 
+module Nat =
+struct
+  type t = int
+  let of_int x = if x < 0 then invalid_arg "Nat.of_int"; x
+  let id = 0
+  let to_int x = x
+  let equal = Stdlib.Int.equal
+  let is_id x = x = 0
+  let lt : t -> t -> bool = (<)
+  let leq : t -> t -> bool = (<=)
+  let compose : t -> t -> t = (+)
+  let dump = Format.pp_print_int
+end
+
 module Int :
 sig
   include S
@@ -25,20 +39,6 @@ struct
   let lt : int -> int -> bool = (<)
   let leq : int -> int -> bool = (<=)
   let compose : int -> int -> int = (+)
-  let dump = Format.pp_print_int
-end
-
-module Nat =
-struct
-  type t = int
-  let of_int x = if x < 0 then invalid_arg "Nat.of_int"; x
-  let id = 0
-  let to_int x = x
-  let equal = Stdlib.Int.equal
-  let is_id x = x = 0
-  let lt : t -> t -> bool = (<)
-  let leq : t -> t -> bool = (<=)
-  let compose : t -> t -> t = (+)
   let dump = Format.pp_print_int
 end
 

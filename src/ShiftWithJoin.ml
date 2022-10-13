@@ -10,17 +10,17 @@ sig
   val bot : t
 end
 
-module Int =
-struct
-  include Shift.Int
-  let join x y = of_int (Int.max (to_int x) (to_int y))
-end
-
 module Nat =
 struct
   include Shift.Nat
   let bot = of_int 0
   let join x y = of_int (Stdlib.Int.max (to_int x) (to_int y))
+end
+
+module Int =
+struct
+  include Shift.Int
+  let join x y = of_int (Int.max (to_int x) (to_int y))
 end
 
 module NonPositive =

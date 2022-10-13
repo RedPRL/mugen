@@ -18,11 +18,11 @@ sig
   val bot : t
 end
 
-(** Integers with addition. Caveats: it does not handle integer overflow. *)
-module Int :
+(** Natural numbers with addition. Caveats: it does not handle integer overflow. *)
+module Nat :
 sig
   (** @closed *)
-  include Semilattice
+  include BoundedSemilattice
 
   (** Conversion from [int] *)
   val of_int : int -> t
@@ -31,11 +31,11 @@ sig
   val to_int : t -> int
 end
 
-(** Natural numbers with addition. Caveats: it does not handle integer overflow. *)
-module Nat :
+(** Integers with addition. Caveats: it does not handle integer overflow. *)
+module Int :
 sig
   (** @closed *)
-  include BoundedSemilattice
+  include Semilattice
 
   (** Conversion from [int] *)
   val of_int : int -> t
