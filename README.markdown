@@ -11,7 +11,7 @@ A vast generalization of [Conor McBride’s crude but effective stratification](
 - [Mugen.Shift](https://redprl.org/mugen/mugen/Mugen/Shift): example displacement algebras
 - [Mugen.ShiftWithJoin](https://redprl.org/mugen/mugen/Mugen/ShiftWithJoin): example displacement algebras with joins
 - [Mugen.Syntax](https://redprl.org/mugen/mugen/Mugen/Syntax): syntax of universe levels
-- [Mugen.Theory](https://redprl.org/mugen/mugen/Mugen/Theory): smart builders and comparators
+- [Mugen.Semantics](https://redprl.org/mugen/mugen/Mugen/Semantics): smart builders and comparators
 
 ## Philosophy and Beliefs in this Experiment
 
