@@ -1,4 +1,4 @@
-(** Smart constructors for {!type:Syntax.endo}. *)
+(** Semantic operations for {!type:Syntax.endo}. *)
 module Endo =
 struct
 
@@ -37,7 +37,7 @@ struct
   end
 end
 
-(** Smart constructors for {!type:Syntax.free}. *)
+(** Semantic operations for {!type:Syntax.free}. *)
 module Free =
 struct
 
