@@ -1,3 +1,5 @@
+(** A convenience module for freely generated universe level expressions. *)
+
 include
   Mugen.Theory.Free.Make
     (struct
@@ -6,9 +8,10 @@ include
       let equal_var = Int.equal
     end)
 
+(** Conversion from the domain. *)
 let rec of_con =
   function
-  | Domain.Var i -> Mugen.Syntax.Var i 
+  | Domain.Var i -> Mugen.Syntax.Var i
   | Domain.ULvl endo -> of_endo endo
   | _ -> invalid_arg "of_con"
 
