@@ -12,7 +12,7 @@ and t =
 
 (** Instantiate the theory module to handle universe levels your datatype. *)
 module ULvl =
-  Mugen.Theory.Endo.Make
+  Mugen.Semantics.Endo.Make
     (struct
       module Shift = Syntax.ULvlShift
       type level = t

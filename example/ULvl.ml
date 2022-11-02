@@ -1,7 +1,7 @@
 (** A convenience module for freely generated universe level expressions. *)
 
 include
-  Mugen.Theory.Free.Make
+  Mugen.Semantics.Free.Make
     (struct
       module Shift = Syntax.ULvlShift
       type var = int

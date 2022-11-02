@@ -1,6 +1,6 @@
 module Endo =
 struct
-  include TheorySigs.Endo
+  include SemanticsSigs.Endo
 
   module Make (P : Param) : S with type shift := P.Shift.t and type level := P.level =
   struct
@@ -22,7 +22,7 @@ end
 
 module Free =
 struct
-  include TheorySigs.Free
+  include SemanticsSigs.Free
 
   module Make (P : Param) : S with type shift := P.Shift.t and type var := P.var =
   struct

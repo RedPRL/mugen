@@ -10,5 +10,5 @@ module ShiftWithJoin : module type of ShiftWithJoin
 (** Syntax of universe levels with displacements *)
 module Syntax : module type of Syntax
 
-(** Smart builders for universe levels with displacements *)
-module Theory : module type of Theory
+(** Semantic operations for universe levels with displacements *)
+module Semantics : module type of Semantics
