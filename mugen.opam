@@ -1,7 +1,9 @@
 opam-version: "2.0"
 name: "mugen"
-synopsis: "Universes"
-description: """Universe Levels"""
+synopsis: "Universe levels and universe polymorphism"
+description: """
+This package implements the generalization of Conor McBride’s crude but effective stratification. The theory behind the design is discussed in the POPL 2023 paper “An Order-Theoretic Analysis of Universe Polymorphism.”
+"""
 maintainer: "favonia <favonia@gmail.com>"
 authors: "The RedPRL Development Team"
 license: "Apache-2.0"
