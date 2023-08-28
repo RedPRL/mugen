@@ -19,7 +19,7 @@ struct
   let dump dump_s dump_a fmt =
     function
     | Shifted (base, shift) ->
-      Format.fprintf fmt "@[<9>Shifted (@[%a@],@ @[%a@])@]" dump_a base dump_s shift
+      Format.fprintf fmt "@[<2>Shifted@ @[@[<1>(%a@],@, @[%a@])@]@]" dump_a base dump_s shift
     | Top ->
       Format.pp_print_string fmt "Top"
 end
