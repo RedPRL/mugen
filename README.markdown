@@ -1,6 +1,6 @@
 # ♾️ mugen 無限: Universe Levels
 
-A vast generalization of [Conor McBride’s crude but effective stratification](https://personal.cis.strath.ac.uk/conor.mcbride/Crude.pdf). We replace natural numbers with what we call _displacement algebras_, the minimum algebraic structure to use McBride’s scheme. Our POPL 2023 paper [“An Order-Theoretic Analysis of Universe Polymorphism”](https://favonia.org/files/mugen.pdf) explained the theory behind our design.
+An implementation of [Conor McBride’s crude but effective stratification](https://personal.cis.strath.ac.uk/conor.mcbride/Crude.pdf). Our POPL 2023 paper [“An Order-Theoretic Analysis of Universe Polymorphism”](https://favonia.org/files/mugen.pdf) explained the theory behind our design.
 
 ## Stability
 
