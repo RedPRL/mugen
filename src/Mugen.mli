@@ -1,5 +1,8 @@
-(** Structured types used in this library *)
-module StructuredType : module type of StructuredType
+(**
+   A gallary of
+*)
+
+(** {1 Gallery of Displacement Algebras} *)
 
 (** Displacement algebras *)
 module Shift : module type of Shift
@@ -7,8 +10,20 @@ module Shift : module type of Shift
 (** Displacement algebras with joins *)
 module ShiftWithJoin : module type of ShiftWithJoin
 
-(** Syntax of universe levels with displacements *)
+(** {1 Syntax of Level Expressions} *)
+
+(** Syntax of universe level expressions *)
 module Syntax : module type of Syntax
 
+(** Smart builders for universe level expressions *)
+module Builder : module type of Builder
+
+(** {1 Comparators of Level Expressions} *)
+
 (** Semantic operations for universe levels with displacements *)
-module Semantics : module type of Semantics
+module Theory : module type of Theory
+
+(**/**)
+
+(** Structured types used in this library *)
+module StructuredType : module type of StructuredType

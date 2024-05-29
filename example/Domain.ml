@@ -2,20 +2,22 @@ open Bwd
 
 type env = t bwd
 
+and ulvl = (Syntax.ulvl_shift, t) Mugen.Syntax.endo
+
 (** The (NbE) domain. *)
 and t =
   | Var of int
   | Univ of t
   | TpULvl
-  | ULvl of (Syntax.ULvlShift.t, t) Mugen.Syntax.endo
+  | ULvl of ulvl
   (** Use [endo] to embed universe levels into your datatype. *)
 
-(** Instantiate the theory module to handle universe levels your datatype. *)
+(** Include the builders. *)
 module ULvl =
-  Mugen.Semantics.Endo.Make
+  Mugen.Builder.Endo.Make
     (struct
       module Shift = Syntax.ULvlShift
       type level = t
-      let level l = ULvl l
-      let unlevel = function ULvl l -> Some l | _ -> None
+      let level (l : ulvl) : t = ULvl l
+      let unlevel : t -> ulvl option = function ULvl l -> Some l | _ -> None
     end)

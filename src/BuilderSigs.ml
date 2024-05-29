@@ -1,4 +1,4 @@
-(** Semantic operations for {!type:Syntax.endo}. *)
+(** Smart builders for {!type:Syntax.endo}. *)
 module Endo =
 struct
 
@@ -37,7 +37,7 @@ struct
   end
 end
 
-(** Semantic operations for {!type:Syntax.free}. *)
+(** Smart builders for {!type:Syntax.free}. *)
 module Free =
 struct
 
@@ -49,9 +49,6 @@ struct
 
     (** The type of level variables. *)
     type var
-
-    (** [equal_var x y] checks whether two level variables [x] and [y] are the same. *)
-    val equal_var : var -> var -> bool
   end
 
   (** The signature of smart constructors. *)
@@ -70,45 +67,5 @@ struct
     val var : var -> level
 
     include Endo.S with type shift := shift and type level := level
-
-    (** [equal l1 l2] checks whether [l1] and [l2] are the same universe level.
-
-        @raise Invalid_argument When [l1] or [l2] is shifted top. *)
-    val equal : level -> level -> bool
-
-    (** [lt l1 l2] checks whether [l1] is strictly less than [l2]. Note that trichotomy fails for general universe levels.
-
-        @raise Invalid_argument When [l1] or [l2] is shifted top. *)
-    val lt : level -> level -> bool
-
-    (** [leq l1 l2] checks whether [l1] is less than or equal to [l2]. Note that trichotomy fails for general universe levels.
-
-        @raise Invalid_argument When [l1] or [l2] is shifted top. *)
-    val leq : level -> level -> bool
-
-    (** [gt l1 l2] is [lt l2 l1]. *)
-    val gt : level -> level -> bool
-
-    (** [geq l1 l2] is [leq l2 l1]. *)
-    val geq : level -> level -> bool
-
-    (** Infix notation. *)
-    module Infix :
-    sig
-      (** Alias of {!val:equal}. *)
-      val (=) : level -> level -> bool
-
-      (** Alias of {!val:lt}. *)
-      val (<) : level -> level -> bool
-
-      (** Alias of {!val:leq}. *)
-      val (<=) : level -> level -> bool
-
-      (** Alias of {!val:gt}. *)
-      val (>) : level -> level -> bool
-
-      (** Alias of {!val:geq}. *)
-      val (>=) : level -> level -> bool
-    end
   end
 end

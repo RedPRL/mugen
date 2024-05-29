@@ -1,0 +1,21 @@
+{0 Quickstart Tutorial}
+
+This tutorial is for an implementer (you!) to integrate this library into your type theory as quickly as possible. We will assume you are already familiar with OCaml and dependent type theory, and are using a typical OCaml package structure.
+
+{1 Introduction}
+
+A universe level expression in this library is represented as a pair of a variable together with a {i displacement}. For example, [x + 10] means the variable level [x] shifted (bumped) by 10 levels. The "shifting of 10 levels" is called a displacement in our terminology. While it looks limited to consider only a variable and a displacement, we proved that it is in a sense a universal scheme if you allow all mathematically possible displacements beyond natural numbers. We also call the minimum algebra of disablements that would make the scheme work a {i displacement algebra}. See our {{: https://doi.org/10.1145/3571250} POPL paper} for more details.
+
+This library implements several displacement algebras you could choose from, along with a uniform interface to construct and compare universe level expressions.
+
+{1 Choose Your Displacements}
+
+The first step is to choose your favorite {i displacements}. To start with, we will use {{!module:Mugen.Shift.Int}integers} as an example. It is easy to change displacement algebras later on.
+
+{1 Extend Your Syntax}
+
+
+
+{1 Build Level Expressions}
+
+{1 Compare Level Expressions}
