@@ -47,6 +47,8 @@ include Mugen.Builder.Free.Make (Param)
 include Mugen.Theory.Make (Param)
 ]}
 
+Take a look at {!type:Mugen.Syntax.free} for the definition of free level expressions.
+
 {1 Extend Your Syntax}
 
 Now we have the free level expressions ready, you need to extend your datatype to embed levels and define the conversion functions to free ones. A typical datatype holding terms or types will have the following pattern:
@@ -60,6 +62,7 @@ There are three steps to add level expressions to your datatype
 {2 Change the Datatype}
 
 The idea is to use {!Mugen.Syntax.endo}, instead of {!Mugen.Syntax.free}, so that displacements can syntactically apply to any term or type in your language (but most of them will be ill-formed terms or types). The first parameter of {!Mugen.Syntax.endo} is the type of displacements, and the second parameter is your datatype. It needs to be defined together with your datatype due to the mutual recursion; in the following example, we choose to add a new constructor, [ULvl], to embed level expressions:
+
 {[
 (** Use [endo] to embed levels into your datatype. *)
 type ulvl = (ULvl.shift, t) Mugen.Syntax.endo
@@ -70,6 +73,8 @@ and t =
   (* ... *)
   | ULvl of ulvl
 ]}
+
+You can take a look at {!type:Mugen.Syntax.endo} for the definition of embedded level expressions.
 
 {2 Add Converters}
 
@@ -94,7 +99,7 @@ You might have noticed that there is a "top" level---we added the top level for 
 
 {2 Add Smart Builders}
 
-This step is optional, but it may be desirable to add smart builders that will attempt to consolidate displacements when building an embedded level expressions. To do so, the smart builders need to know how to check whether an expression in your datatype is a level expression. Here is the snippet to include smart builders for embedded level expressions:
+This step is technically optional, but it may be desirable to add smart builders that will attempt to consolidate displacements when building an embedded level expressions. The rest of the tutorial will assume you have done this. To do so, the smart builders need to know how to check whether an expression in your datatype is a level expression. Here is the snippet to include smart builders for embedded level expressions:
 
 {[
 include
@@ -113,3 +118,29 @@ include
       let unlevel : t -> ulvl option = function ULvl l -> Some l | _ -> None
     end)
 ]}
+
+{1 Comparing Levels}
+
+The most common tasks are to compare two embedded levels. The code is straightforward---the [ULvl] module you have created in the earlier step comes with comparators. It is enough to first convert embedded level expressions to free ones, and compare them accordingly:
+{[
+  let equal_ulvl l1 l2 = ULvl.equal (to_ulvl l1) (to_ulvl l2)
+  let leq_ulvl l1 l2 = ULvl.leq (to_ulvl l1) (to_ulvl l2)
+  let lt_ulvl l1 l2 = ULvl.lt (to_ulvl l1) (to_ulvl l2)
+]}
+
+{1 Building Levels}
+
+Another common task in a real proof system is to parse user inputs and construct (embedded) level expressions. This can be easily done by using the smart builders we introduced earlier.
+{[
+  let equal_ulvl l1 l2 = ULvl.equal (to_ulvl l1) (to_ulvl l2)
+  let leq_ulvl l1 l2 = ULvl.leq (to_ulvl l1) (to_ulvl l2)
+  let lt_ulvl l1 l2 = ULvl.lt (to_ulvl l1) (to_ulvl l2)
+]}
+
+{1 Printing Levels}
+
+It is recommended to write your own pretty printer. However, if you wish to dump the universe levels, check out {!val:Mugen.Syntax.Free.dump} for free level expressions and {!val:Mugen.Syntax.Endo.dump} for embedded ones.
+
+{1 Concluding Notes}
+
+That's it! Now you have rich universe levels
