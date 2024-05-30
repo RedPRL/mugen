@@ -8,15 +8,15 @@ module ShiftWithJoin : module type of ShiftWithJoin
 
 (** {1 Syntax of Level Expressions} *)
 
-(** Syntax of universe level expressions *)
+(** Definitions of level expressions *)
 module Syntax : module type of Syntax
 
-(** Smart builders for universe level expressions *)
+(** Smart constructors for level expressions *)
 module Builder : module type of Builder
 
 (** {1 Comparators of Level Expressions} *)
 
-(** Semantic operations for universe levels with displacements *)
+(** Semantic comparators for free level expressions *)
 module Theory : module type of Theory
 
 (**/**)

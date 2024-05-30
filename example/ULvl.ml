@@ -19,7 +19,7 @@ type shift = Shift.t
 (** An alias to the type of free level expressions *)
 type t = (shift, int) Mugen.Syntax.free
 
-(** Smart builders for free level expressions *)
+(** Smart constructors for free level expressions *)
 include Mugen.Builder.Free.Make (Param)
 
 (** Comparators for free level expressions *)
