@@ -1,4 +1,3 @@
-(** A family of polynomial endofunctors [('s, -) endo] indexed by the type of displacements ['s]. *)
 type ('s, 'a) endo =
   | Shifted of 'a * 's
   | Top

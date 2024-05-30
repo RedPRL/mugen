@@ -1,31 +1,26 @@
 (** A convenience module for freely generated universe level expressions. *)
 
-type t = (Syntax.ulvl_shift, int) Mugen.Syntax.free
+module Param =
+struct
+  (** Your chosen displacement algebra *)
+  module Shift = Mugen.Shift.Int
 
-include
-  Mugen.Builder.Free.Make
-    (struct
-      module Shift = Syntax.ULvlShift
-      type var = int
-    end)
+  (** The representation of variables in free level expressions *)
+  type var = int
 
-include
-  Mugen.Theory.Make
-    (struct
-      module Shift = Syntax.ULvlShift
-      type var = int
-      let equal_var = Int.equal
-    end)
+  (** The equality checker for variables *)
+  let equal_var : var -> var -> bool = Int.equal
+end
+include Param
 
-(** Conversion from the domain. *)
-let rec of_con : Domain.t -> t =
-  function
-  | Domain.Var i -> Mugen.Syntax.Var i
-  | Domain.ULvl endo -> of_endo endo
-  | _ -> invalid_arg "of_con"
+(** An alias to the type of displacements *)
+type shift = Shift.t
 
-and of_endo : Domain.ulvl -> t =
-  let module M = Mugen.Syntax in
-  function
-  | M.Shifted (l, s) -> shifted (of_con l) s
-  | M.Top -> top
+(** An alias to the type of free level expressions *)
+type t = (shift, int) Mugen.Syntax.free
+
+(** Smart builders for free level expressions *)
+include Mugen.Builder.Free.Make (Param)
+
+(** Comparators for free level expressions *)
+include Mugen.Theory.Make (Param)
