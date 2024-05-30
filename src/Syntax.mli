@@ -16,13 +16,13 @@ sig
     | Shifted of 'a * 's
     | Top
 
-  (** [shifted l s] is [Shifted (l, s)]. *)
+  (** [shifted l s] is [Shifted (l, s)], representing the level [l] shifted by the displacement [s]. *)
   val shifted : 'a -> 's -> ('s, 'a) t
 
-  (** [top] is [Top]. *)
+  (** [top] is [Top], the additional top level for convenience. *)
   val top : ('s, 'a) t
 
-  (** Ugly printer. *)
+  (** [dump dump_s dump_a] is the ugly printer for levels, where [dump_s] is the printer for displacements and [dump_a] is the printer for inner sub-expressions. *)
   val dump :
     (Format.formatter -> 's -> unit) ->
     (Format.formatter -> 'a -> unit) ->
@@ -37,16 +37,16 @@ sig
     | Level of ('s, ('s, 'v) free) endo
     | Var of 'v
 
-  (** [shifted l s] is [Level (Shifted (l, s))]. *)
+  (** [shifted l s] is [Level (Shifted (l, s))], representing the level [l] shifted by the displacement [s]. *)
   val shifted : ('s, 'v) t -> 's -> ('s, 'v) t
 
-  (** [top] is [Level Top]. *)
+  (** [top] is [Top], the additional top level for convenience. *)
   val top : ('s, 'v) t
 
-  (** [var v] is [Var v]. *)
+  (** [var v] is [Var v], representing the variable level [v]. *)
   val var : 'v -> ('s, 'v) t
 
-  (** Ugly printer. *)
+  (** [dump dump_s dump_v] is the ugly printer for levels, where [dump_s] is the printer for displacements and [dump_v] is the printer for variables. *)
   val dump :
     (Format.formatter -> 's -> unit) ->
     (Format.formatter -> 'v -> unit) ->

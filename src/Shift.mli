@@ -1,6 +1,6 @@
 open StructuredType
 
-(** A displacement algebra. *)
+(** The signature of a displacement algebra. *)
 module type S =
 sig
   (** To form a valid displacement algebra, {!val:compose} and {!val:id} should form a monoid, and {!val:lt} (the strict order) must be left-invariant respect to {!val:compose}. *)

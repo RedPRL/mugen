@@ -8,14 +8,14 @@ type ctx = cell bwd
 let to_env ctx = Bwd.map (fun {tm; _} -> tm) ctx
 let to_size ctx = Bwd.length ctx
 
-let shift s = Syntax.ULvlShift.of_int s
+let shift s = ULvl.Shift.of_int s
 
 (** Type checking. *)
 let rec check ctx (tm : CS.t) (tp : Domain.t) =
   match tm, tp with
   | CS.Univ l1, Univ l2 ->
     let l1 = check ctx l1 TpULvl in
-    assert (ULvl.lt (ULvl.of_con (NbE.eval (to_env ctx) l1)) (ULvl.of_con l2));
+    assert (ULvl.lt (Domain.to_ulvl (NbE.eval (to_env ctx) l1)) (Domain.to_ulvl l2));
     Univ l1
   | CS.TpULvl, Univ (ULvl Top) -> TpULvl
   | CS.Shift (l, s), TpULvl ->

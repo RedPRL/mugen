@@ -1,7 +1,7 @@
-module ULvlShift = Mugen.Shift.Int
+type ulvl = (ULvl.shift, t) Mugen.Syntax.endo
 
-type t =
+and t =
   | Var of int
   | Univ of t
   | TpULvl
-  | ULvl of (ULvlShift.t, t) Mugen.Syntax.endo
+  | ULvl of ulvl

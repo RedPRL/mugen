@@ -3,8 +3,8 @@ open Bwd
 let rec eval_ulvl env =
   let module M = Mugen.Syntax in
   function
-  | M.Top -> Domain.ULvl.top
-  | M.Shifted (b, s) -> Domain.ULvl.shifted (eval env b) s
+  | M.Top -> Domain.top
+  | M.Shifted (b, s) -> Domain.shifted (eval env b) s
 
 and eval env : Syntax.t -> Domain.t =
   function
@@ -26,7 +26,7 @@ and quote ctx : Domain.t -> Syntax.t =
   | ULvl l -> ULvl (quote_ulvl ctx l)
 
 let equate_ulvl l1 l2 =
-  assert (ULvl.equal (ULvl.of_endo l1) (ULvl.of_endo l2))
+  assert (ULvl.equal (Domain.endo_to_ulvl l1) (Domain.endo_to_ulvl l2))
 
 let rec equate ctx (v1 : Domain.t) (v2 : Domain.t) =
   match v1, v2 with
@@ -41,15 +41,12 @@ let rec equate ctx (v1 : Domain.t) (v2 : Domain.t) =
   | _ ->
     failwith "equate"
 
-let leq_ulvl l1 l2 =
-  assert (ULvl.leq (ULvl.of_con l1) (ULvl.of_con l2))
-
 let subtype _ctx (v1 : Domain.t) (v2 : Domain.t) =
   match v1, v2 with
   | Var i1, Var i2 ->
     assert (Int.equal i1 i2)
   | Univ l1, Univ l2 ->
-    leq_ulvl l1 l2
+    assert (ULvl.leq (Domain.to_ulvl l1) (Domain.to_ulvl l2))
   | TpULvl, TpULvl ->
     ()
   | ULvl l1, ULvl l2 ->

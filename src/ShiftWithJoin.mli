@@ -1,4 +1,4 @@
-(** A displacement algebra with joins. *)
+(** The signature of a displacement algebra with binary joins. (Note that this refers to joins of displacements, not joins of universe levels.) *)
 module type Semilattice =
 sig
   (** @closed *)
