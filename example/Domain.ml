@@ -38,6 +38,6 @@ include
       (** A function to embed a level expression *)
       let level (l : ulvl) : t = ULvl l
 
-      (** A function to check whether an expression is an embed a level expression *)
+      (** A function to check whether an expression is an embedded level expression *)
       let unlevel : t -> ulvl option = function ULvl l -> Some l | _ -> None
     end)
