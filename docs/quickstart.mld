@@ -40,7 +40,7 @@ type shift = Shift.t
 (** An alias to the type of free level expressions *)
 type t = (shift, int) Mugen.Syntax.free
 
-(** Smart builders for free level expressions *)
+(** Smart constructors for free level expressions *)
 include Mugen.Builder.Free.Make (Param)
 
 (** Comparators for free level expressions *)
@@ -97,9 +97,9 @@ and endo_to_ulvl : ulvl -> ULvl.t =
 
 You might have noticed that there is a "top" level---we added the top level for convenience.
 
-{2 Add Smart Builders}
+{2 Add Smart Constructors}
 
-This step is technically optional, but it may be desirable to add smart builders that will attempt to consolidate displacements when building an embedded level expressions. The rest of the tutorial will assume you have done this. To do so, the smart builders need to know how to check whether an expression in your datatype is a level expression. Here is the snippet to include smart builders for embedded level expressions:
+This step is technically optional, but it may be desirable to add smart constructors that will attempt to consolidate displacements when building an embedded level expressions. The rest of the tutorial will assume you have done this. To do so, the smart constructors need to know how to check whether an expression in your datatype is a level expression. Here is the snippet to include smart constructors for embedded level expressions:
 
 {[
 include
@@ -130,17 +130,29 @@ The most common tasks are to compare two embedded levels. The code is straightfo
 
 {1 Building Levels}
 
-Another common task in a real proof system is to parse user inputs and construct (embedded) level expressions. This can be easily done by using the smart builders we introduced earlier.
+Another common task in a real system is to parse user inputs and construct corresponding (embedded) level expressions. Remember that you have included the smart constructors in previous steps. The essential one
 {[
-  let equal_ulvl l1 l2 = ULvl.equal (to_ulvl l1) (to_ulvl l2)
-  let leq_ulvl l1 l2 = ULvl.leq (to_ulvl l1) (to_ulvl l2)
-  let lt_ulvl l1 l2 = ULvl.lt (to_ulvl l1) (to_ulvl l2)
+  let _ = shifted l s
+]}
+to obtain the level [l] shifted by the displacement [s]. Constructing the displacement [s] depends on your chosen displacement algebra. If you were using integers, aliasing the stock {!module:Mugen.Shift.Int} as [ULvl.Shift]), then the shifting by 10 levels can be implemented as:
+{[
+  let _ = shifted l (ULvl.Shift.of_int 10)
 ]}
 
-{1 Printing Levels}
-
-It is recommended to write your own pretty printer. However, if you wish to dump the universe levels, check out {!val:Mugen.Syntax.Free.dump} for free level expressions and {!val:Mugen.Syntax.Endo.dump} for embedded ones.
+For convenience, we also introduced the top level
+{[
+  let _ = top
+]}
+that will be greater than any other level. (Note that you cannot shift the distinguished top level!)
 
 {1 Concluding Notes}
 
-That's it! Now you have rich universe levels
+That's it! Now you have rich universe levels. Here are a few remarks:
+
+{2 Ugly Printers for Debugging}
+
+It is recommended to write your own pretty printer. However, if you wish to dump the universe levels, check out {!val:Mugen.Syntax.Free.dump} for free level expressions and {!val:Mugen.Syntax.Endo.dump} for embedded ones.
+
+{2 Changing the Displacement Algebra}
+
+It is trivial to switch to another displacement algebra by aliasing [ULvl.Shift] to another module implementing the interface {!module-type:Mugen.Shift.S}. Changing the displacement algebra only affects how displacements are constructed and printed.

@@ -1,4 +1,4 @@
-(** Smart builders for {!type:Syntax.endo}. *)
+(** Smart constructors for {!type:Syntax.endo}. *)
 module Endo =
 struct
 
@@ -8,10 +8,10 @@ struct
     (** The displacement algebra. *)
     module Shift : Shift.S
 
-    (** The type that embeds levels. *)
+    (** The type that embeds level expressions. *)
     type level
 
-    (** The embedding of levels into [level]. *)
+    (** The embedding of level expressions into {!type:level}. *)
     val level : (Shift.t, level) Syntax.endo -> level
 
     (** Extract the embedded level, if any. *)
@@ -27,17 +27,18 @@ struct
     (** The type that embeds levels. *)
     type level
 
-    (** Smarter version of {!val:Syntax.Endo.shifted} that collapses multiple displacements
+    (** [shifted s l] is the smarter version of {!val:Syntax.Endo.shifted} that collapses multiple displacements,
+        representing the level [l] shifted by the displacement [s].
 
-        @raise Invalid_argument When it attempts to shift the top level. *)
+        @raise Invalid_argument When it (directly or indirectly) attempts to shift the top level. *)
     val shifted : level -> shift -> level
 
-    (** [top] is {!val:Syntax.Endo.top} *)
+    (** [top] is {!val:Syntax.Endo.top}, the additional top level for convenience. *)
     val top : level
   end
 end
 
-(** Smart builders for {!type:Syntax.free}. *)
+(** Smart constructors for {!type:Syntax.free}. *)
 module Free =
 struct
 
@@ -63,7 +64,7 @@ struct
     (** The type of freely generated levels. *)
     type level = (shift, var) Syntax.free
 
-    (** [var] is {!val:Syntax.Free.var} *)
+    (** [var] is {!val:Syntax.Free.var}, representing the variable level [v]. *)
     val var : var -> level
 
     include Endo.S with type shift := shift and type level := level

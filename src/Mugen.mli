@@ -1,13 +1,9 @@
-(**
-   A gallary of
-*)
-
 (** {1 Gallery of Displacement Algebras} *)
 
-(** Displacement algebras *)
+(** Stock displacement algebras *)
 module Shift : module type of Shift
 
-(** Displacement algebras with joins *)
+(** Stock displacement algebras with joins *)
 module ShiftWithJoin : module type of ShiftWithJoin
 
 (** {1 Syntax of Level Expressions} *)
