@@ -1,6 +1,6 @@
 {0 Quickstart Tutorial}
 
-This tutorial is for an implementer (you!) to integrate this library into your type theory as quickly as possible. We will assume you are already familiar with OCaml and dependent type theory, and are using a typical OCaml package structure.
+This tutorial is for an implementer (you!) to integrate this library into your type theory implementation as quickly as possible. We will assume you are already familiar with OCaml and dependent type theory, and are using a typical OCaml package structure.
 
 {1 Introduction}
 
