@@ -13,10 +13,10 @@ struct
 end
 include Param
 
-(** An alias to the type of displacements *)
+(** An alias of the type of displacements *)
 type shift = Shift.t
 
-(** An alias to the type of free level expressions *)
+(** An alias of the type of free level expressions *)
 type t = (shift, int) Mugen.Syntax.free
 
 (** Smart constructors for free level expressions *)

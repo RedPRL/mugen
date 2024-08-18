@@ -34,10 +34,10 @@ struct
 end
 include Param
 
-(** An alias to the type of displacements *)
+(** An alias of the type of displacements *)
 type shift = Shift.t
 
-(** An alias to the type of free level expressions *)
+(** An alias of the type of free level expressions *)
 type t = (shift, int) Mugen.Syntax.free
 
 (** Smart constructors for free level expressions *)
@@ -55,7 +55,7 @@ Now we have the free level expressions ready, you need to extend your datatype t
 {[
 type t =
   | Var of int (* maybe using De Bruijn indexes or levels *)
-  (* ... *)
+  (* ... more syntax follows ... *)
 ]}
 There are three steps to add level expressions to your datatype
 
@@ -70,7 +70,7 @@ type ulvl = (ULvl.shift, t) Mugen.Syntax.endo
 (** The datatype of terms. *)
 and t =
   | Var of int
-  (* ... *)
+  (* ... more syntax follows ... *)
   | ULvl of ulvl
 ]}
 
@@ -78,7 +78,6 @@ You can take a look at {!type:Mugen.Syntax.endo} for the definition of embedded 
 
 {2 Add Converters}
 
-Remember that only free level expressions can be compared. Therefore, we should add conversion functions from embedded level expressions to free ones. Copy and paste the following code after the definition of your datatype:
 
 {[
 (** Conversion to free level expressions *)
@@ -95,13 +94,39 @@ and endo_to_ulvl : ulvl -> ULvl.t =
   | M.Top -> ULvl.top
 ]}
 
-You might have noticed that there is a "top" level---we added the top level for convenience.
 
 {2 Add Smart Constructors}
 
-This step is technically optional, but it may be desirable to add smart constructors that will attempt to consolidate displacements when building an embedded level expressions. The rest of the tutorial will assume you have done this. To do so, the smart constructors need to know how to check whether an expression in your datatype is a level expression. Here is the snippet to include smart constructors for embedded level expressions:
+{1 Comparing Levels}
 
+The most common tasks are to compare two embedded levels. The code is straightforward---the [ULvl] module you have created comes with comparators for free level expressions. It is sufficient to convert embedded level expressions to free ones and compare them accordingly. Copy and paste the following code snippet after the definition of your datatype:
 {[
+(** Conversion to free level expressions *)
+let rec to_ulvl : t -> ULvl.t =
+  function
+  | Var i -> Mugen.Syntax.Var i
+  | ULvl endo -> endo_to_ulvl endo
+  | _ -> invalid_arg "to_ulvl"
+
+and endo_to_ulvl : ulvl -> ULvl.t =
+  let module M = Mugen.Syntax in
+  function
+  | M.Shifted (l, s) -> ULvl.shifted (to_ulvl l) s
+  | M.Top -> ULvl.top
+]}
+Now, the comparators for embedded level expressions can be defined as followed:
+{[
+  let equal_ulvl l1 l2 = ULvl.equal (to_ulvl l1) (to_ulvl l2)
+  let leq_ulvl l1 l2 = ULvl.leq (to_ulvl l1) (to_ulvl l2)
+  let lt_ulvl l1 l2 = ULvl.lt (to_ulvl l1) (to_ulvl l2)
+]}
+You might have noticed that there is a "top" level---we added the top level for convenience.
+
+{1 Building Levels}
+
+Another common task in a real system is to parse user inputs and construct corresponding (embedded) level expressions. The recommended approach is to use smart constructors that will consolidate displacements when building level expressions. To do so, these smart constructors need to know how to check whether an expression in your datatype is a level expression. Here is the snippet to copy and paste to summon smart constructors:
+{[
+(** Include smart constructors for universe levels *)
 include
   Mugen.Builder.Endo.Make
     (struct
@@ -119,18 +144,10 @@ include
     end)
 ]}
 
-{1 Comparing Levels}
+See
+Remember that you have included the smart constructors in previous steps.
 
-The most common tasks are to compare two embedded levels. The code is straightforward---the [ULvl] module you have created in the earlier step comes with comparators. It is enough to first convert embedded level expressions to free ones, and compare them accordingly:
-{[
-  let equal_ulvl l1 l2 = ULvl.equal (to_ulvl l1) (to_ulvl l2)
-  let leq_ulvl l1 l2 = ULvl.leq (to_ulvl l1) (to_ulvl l2)
-  let lt_ulvl l1 l2 = ULvl.lt (to_ulvl l1) (to_ulvl l2)
-]}
-
-{1 Building Levels}
-
-Another common task in a real system is to parse user inputs and construct corresponding (embedded) level expressions. Remember that you have included the smart constructors in previous steps. The essential one
+The essential one
 {[
   let _ = shifted l s
 ]}

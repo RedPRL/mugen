@@ -25,7 +25,7 @@ and endo_to_ulvl : ulvl -> ULvl.t =
   | M.Shifted (l, s) -> ULvl.shifted (to_ulvl l) s
   | M.Top -> ULvl.top
 
-(** Smart constructors for universe levels *)
+(** Include smart constructors for universe levels *)
 include
   Mugen.Builder.Endo.Make
     (struct
