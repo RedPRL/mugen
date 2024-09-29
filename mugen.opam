@@ -6,7 +6,7 @@ This package implements the generalization of Conor McBride’s crude but effect
 """
 maintainer: "favonia <favonia@gmail.com>"
 authors: "The RedPRL Development Team"
-license: "Apache-2.0"
+license: "Apache-2.0 WITH LLVM-exception"
 homepage: "https://github.com/RedPRL/mugen"
 bug-reports: "https://github.com/RedPRL/mugen/issues"
 dev-repo: "git+https://github.com/RedPRL/mugen.git"
