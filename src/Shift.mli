@@ -176,19 +176,6 @@ sig
   val to_list : t -> Base.t list
 end
 
-(** Fractal displacements. *)
-module Fractal (Base : S) :
-sig
-  (** @closed *)
-  include S
-
-  (** [embed b] is the embedding of the base displacement [b]. *)
-  val embed : Base.t -> t
-
-  (** [push b s] pushes [s] to the sub-level and applies [b] to the main level. *)
-  val push : Base.t -> t -> t
-end
-
 (** Opposite displacements *)
 module Opposite (Base : S) :
 sig

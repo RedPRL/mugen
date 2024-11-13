@@ -299,57 +299,6 @@ struct
       x
 end
 
-module Fractal (Base : S) :
-sig
-  include S
-  val embed : Base.t -> t
-  val push : Base.t -> t -> t
-end
-=
-struct
-  type t = Base.t * Base.t list
-
-  let embed s : t = s, []
-  let push s1 (s2, s2s) = s1, (s2 :: s2s)
-
-  let id = embed Base.id
-
-  let is_id = function s, [] -> Base.is_id s | _ -> false
-
-  let equal (i1, is1) (i2, is2) =
-    List.equal Base.equal (i1 :: is1) (i2 :: is2)
-
-  let rec lt xs ys =
-    match xs, ys with
-    | [], [] -> false
-    | [], _ -> true
-    | _::_, [] -> false
-    | x::xs, y::ys -> Base.lt x y || (Base.equal x y && lt xs ys)
-
-  let lt (i1, is1) (i2, is2) = lt (i1 :: is1) (i2 :: is2)
-
-  let rec leq xs ys =
-    match xs, ys with
-    | [], _ -> true
-    | _::_, [] -> false
-    | x::xs, y::ys -> Base.lt x y || (Base.equal x y && leq xs ys)
-
-  let leq (i1, is1) (i2, is2) = leq (i1 :: is1) (i2 :: is2)
-
-  let rec compose s1 s2 =
-    match s1, s2 with
-    | (s1, []), (s2, s2s) -> Base.compose s1 s2, s2s
-    | (s1, (s11 :: s1s)), _ -> push s1 (compose (s11, s1s) s2)
-
-  let dump fmt (s, ss) =
-    if ss = [] then
-      Base.dump fmt s
-    else
-      Format.fprintf fmt "@[<1>(%a)@]"
-        (Format.pp_print_list ~pp_sep:(fun fmt () -> Format.pp_print_string fmt ")@,.(") Base.dump)
-        (s :: ss)
-end
-
 module Opposite (Base : S) :
 sig
   include S
