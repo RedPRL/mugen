@@ -12,6 +12,13 @@ let cases = [
   "right tail prevents ordering", (1, []), (0, [1]), (false, false, false);
   "strict inequality later in left prefix", (1, [1; 0]), (1, []), (false, true, true);
   "strict inequality later in right prefix", (0, []), (0, [0; 1]), (false, true, true);
+  (* Both lists first traverse the shared prefix [2; 3], then one runs out. *)
+  "shared prefix, left tail prevents equality and ordering", (1, [2; 3; 0]), (0, [2; 3]), (false, false, false);
+  "shared prefix, right tail prevents equality and gives strict ordering", (0, [2; 3]), (1, [2; 3; 0]), (false, true, true);
+  "shared prefix, left tail gives strict ordering", (0, [2; 3; 1]), (1, [2; 3]), (false, true, true);
+  "shared prefix, right tail prevents ordering", (1, [2; 3]), (0, [2; 3; 1]), (false, false, false);
+  "shared prefix, strict inequality later in left prefix", (1, [2; 3; 1; 0]), (1, [2; 3]), (false, true, true);
+  "shared prefix, strict inequality later in right prefix", (0, [2; 3]), (0, [2; 3; 0; 1]), (false, true, true);
   "equal sequences are not strictly ordered", (1, [0]), (1, [0]), (true, true, false);
   "crossing prefixes are incomparable", (0, [0; 1]), (0, [1]), (false, false, false);
 ]
