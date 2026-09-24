@@ -207,15 +207,15 @@ struct
   let rec for_all2 f (b1, l1) (b2, l2) =
     match l1, l2 with
     | [], [] -> f b1 b2
-    | l1, [] -> List.for_all (fun x1 -> f x1 b2) l1
-    | [], l2 -> List.for_all (fun x2 -> f b1 x2) l2
+    | x1::l1, [] -> f x1 b2 && for_all2 f (b1, l1) (b2, [])
+    | [], x2::l2 -> f b1 x2 && for_all2 f (b1, []) (b2, l2)
     | x1::l1, x2::l2 -> f x1 x2 && for_all2 f (b1, l1) (b2, l2)
 
   let rec exists2 f (b1, l1) (b2, l2) =
     match l1, l2 with
     | [], [] -> f b1 b2
-    | l1, [] -> List.exists (fun x1 -> f x1 b2) l1
-    | [], l2 -> List.exists (fun x2 -> f b1 x2) l2
+    | x1::l1, [] -> f x1 b2 || exists2 f (b1, l1) (b2, [])
+    | [], x2::l2 -> f b1 x2 || exists2 f (b1, []) (b2, l2)
     | x1::l1, x2::l2 -> f x1 x2 || exists2 f (b1, l1) (b2, l2)
 
   let equal l1 l2 = for_all2 Base.equal l1 l2
